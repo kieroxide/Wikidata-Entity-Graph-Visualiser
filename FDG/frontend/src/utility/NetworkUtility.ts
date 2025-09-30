@@ -44,15 +44,4 @@ export class NetworkUtility {
             throw error;
         }
     }
-
-    /**
-     * A quick and dirty method to fix the error with old requests from previous instances
-     * corrupting a new instances request.
-     * We prevent this by doing a false fetch from the server first and then just clearing the graph
-     * Awaiting seems to also await for the old instances response aswell
-     */
-    static async flushSever(graphManager: GraphManager) {
-        await graphManager.fetchRelations("Q1", 1, 1);
-        graphManager.clearGraph();
-    }
 }

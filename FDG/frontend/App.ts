@@ -71,10 +71,6 @@ class Application {
 
     /** Starts the main render and simulation loop. */
     private async startRenderLoop() {
-        // Flushed all previous data sent by previous instances out from the server
-        // To prevent old data being merged with a new server request
-        await NetworkUtility.flushSever(this.graphManager);
-
         const gameLoop = () => {
             // Run physics simulation
             this.graphManager.simulate();
