@@ -23,7 +23,7 @@ interface BackendResponse {
 }
 
 export class GraphManager {
-    private static readonly MINIMUM_ENTITY_FETCH = 2;
+    private static readonly MINIMUM_ENTITY_FETCH = 1;
     private readonly _graph: Graph;
     private readonly _ctx: CanvasRenderingContext2D;
 
