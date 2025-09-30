@@ -1,4 +1,4 @@
-# Force-Directed Graph Redux
+# Wikidata Entity Graph Visualizer
 
 A full-stack project for exploring and visualizing entity-relationship graphs from Wikidata using a custom force-directed layout. The project consists of a Python backend for crawling, cleaning, and serving Wikidata graphs, and a TypeScript/Vite frontend for interactive visualization.
 
