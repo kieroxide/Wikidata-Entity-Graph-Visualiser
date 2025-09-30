@@ -294,7 +294,7 @@ export class UIController {
     getSettings() {
         return {
             depth: MathUtility.clamp(parseInt(this._elements.depthSlider?.value || "1"), 1, 5),
-            relationLimit: MathUtility.clamp(parseInt(this._elements.relationLimit?.value || "5"), 1, 10),
+            relationLimit: MathUtility.clamp(parseInt(this._elements.relationLimit?.value || "5"), 1, 20),
             appendMode: this._elements.appendMode?.checked || false,
             entityId: this._elements.wikiInput?.value.trim() || "Q1", // TODO: Add more security
         };
