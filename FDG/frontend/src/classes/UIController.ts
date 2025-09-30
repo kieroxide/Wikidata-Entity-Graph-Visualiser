@@ -4,8 +4,16 @@ import { NetworkUtility } from "../utility/NetworkUtility";
 import { RenderingUtility } from "../utility/RenderingUtility";
 
 export class UIController {
-    private readonly _graphManager: GraphManager;
+    private static readonly DEPTH_LIMIT = {
+        MIN: 1,
+        MAX: 5,
+    };
+    private static readonly RELATION_LIMIT = {
+        MIN: 1,
+        MAX: 20,
+    };
 
+    private readonly _graphManager: GraphManager;
     private _suggestions: Array<{
         id: string;
         label: string;
@@ -293,8 +301,18 @@ export class UIController {
      */
     getSettings() {
         return {
-            depth: MathUtility.clamp(parseInt(this._elements.depthSlider?.value || "1"), 1, 5),
-            relationLimit: MathUtility.clamp(parseInt(this._elements.relationLimit?.value || "5"), 1, 20),
+            depth: MathUtility.clamp(
+                parseInt(this._elements.depthSlider?.value || "1"),
+                UIController.DEPTH_LIMIT.MIN,
+                UIController.DEPTH_LIMIT.MAX
+            ),
+
+            relationLimit: MathUtility.clamp(
+                parseInt(this._elements.relationLimit?.value || "5"),
+                UIController.RELATION_LIMIT.MIN,
+                UIController.RELATION_LIMIT.MAX
+            ),
+            
             appendMode: this._elements.appendMode?.checked || false,
             entityId: this._elements.wikiInput?.value.trim() || "Q1", // TODO: Add more security
         };
