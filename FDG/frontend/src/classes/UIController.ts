@@ -204,9 +204,10 @@ export class UIController {
             this.setLoadingState(true);
 
             const settings = this.getSettings();
-            let entityId = this._elements.wikiInput?.value.trim().toUpperCase() || "Q1"; // default to universe
+            const entityInput = this._elements.wikiInput?.value.trim().toUpperCase() || "Q1"; // default to universe
+            let entityId = entityInput;
 
-            // Test to ensure entityID is in QID format
+            // Looks up QID which is needed for for fetching if not already a QID
             if (!/^Q\d+$/.test(entityId)) {
                 const qid = await NetworkUtility.fetchQIDByName(entityId);
                 if (qid) {
@@ -231,7 +232,7 @@ export class UIController {
             }
 
             if (response) {
-                RenderingUtility.showSuccess(`Graph loaded for: ${entityId}`);
+                RenderingUtility.showSuccess(`Graph loaded for: ${entityInput}`);
             }
         } catch (error) {
             console.error("Error fetching graph:", error);
@@ -312,7 +313,7 @@ export class UIController {
                 UIController.RELATION_LIMIT.MIN,
                 UIController.RELATION_LIMIT.MAX
             ),
-            
+
             appendMode: this._elements.appendMode?.checked || false,
             entityId: this._elements.wikiInput?.value.trim() || "Q1", // TODO: Add more security
         };
