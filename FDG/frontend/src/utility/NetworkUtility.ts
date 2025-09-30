@@ -1,5 +1,4 @@
 /// <reference types="vite/client" />
-import type { GraphManager } from "../classes/GraphManager";
 
 export class NetworkUtility {
     // Ensures automatic switch of server location based on whether production or local
