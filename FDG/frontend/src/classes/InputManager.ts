@@ -45,6 +45,7 @@ export class InputManager {
 
         const graph = this.graphManager.graph;
         const vertexToExpand = graph.lastClickedVertex;
+        const neighboursBeforeExpansion = vertexToExpand?.neighbours.size
 
         if (vertexToExpand) {
             const settings = this.uiController.getSettings();
@@ -56,6 +57,10 @@ export class InputManager {
                 settings.relationLimit
             );
             this.isExpandingVertex = false;
+        }
+        
+        if (neighboursBeforeExpansion == vertexToExpand?.neighbours.size) {
+            RenderingUtility.showError("No entities found. Increase relation goal or try another");
         }
     }
 
