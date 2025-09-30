@@ -1,5 +1,7 @@
-# Wikidata-to-Entity-Graph
+# Original Repository for the backend
+https://github.com/kieroxide/Wikidata_to_Entity_Graph
 
+# Wikidata-to-Entity-Graph
 Wikidata-to-Entity-Graph builds a clean, connected entity-relationship graph from any Wikidata entity (QID), saving the result as JSON files for use in data analysis or visualization.
 
 This project was made mostly to provide as a backend for my wikidata entity FDG project, and so filtering is quite intense due to wikidata's data being messy and full of metadata/different languages.
