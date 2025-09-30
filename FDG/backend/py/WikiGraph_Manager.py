@@ -15,6 +15,7 @@ class WikiGraph_Manager:
         self.entity_crawler.crawl_wiki(source_id, crawl_depth=depth, relation_limit=relation_limit)
         
         return self.data_handler.fetch_relations_data(
+            source_id, 
             self.entity_crawler.entity_ids, 
             self.entity_crawler.property_ids, 
             self.entity_crawler.relations)
@@ -22,13 +23,6 @@ class WikiGraph_Manager:
     def save_all(self):
         """ Saves all gathered data to json files"""
         self.data_handler.save_all()
-    
-    def test_clean_results(self, entities, properties, relations):
-        Cleaner.clean_data(entities, properties, relations)
-
-    def test_results(self, console=False):
-        Cleaner.find_no_label_entities(self.data_handler, console)
-        Cleaner.find_unreferenced_entities(self.data_handler, console)
 
     def change_json_dir(self, json_dir):
         self.data_handler.change_json_dir(json_dir)

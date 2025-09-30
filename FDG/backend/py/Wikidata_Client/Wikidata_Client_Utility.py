@@ -85,6 +85,7 @@ def parseEntityPayload(entities, results):
                 f"https://upload.wikimedia.org/wikipedia/commons/thumb/"
                 f"{md5[0]}/{md5[0:2]}/{encoded_name}/{size}px-{encoded_name}"
             )
+        
         if img:
             # Extract just the filename from the URL
             path = urlparse(img).path

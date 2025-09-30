@@ -27,7 +27,7 @@ class Data_Handler:
         self.property_path = self.__jsonDir / "properties.json"
         self.relations_path = self.__jsonDir / "relations.json"
     
-    def fetch_relations_data(self, entity_ids: set, property_ids: set, relations):
+    def fetch_relations_data(self, source_id: str, entity_ids: set, property_ids: set, relations):
         """Fetches data for given entities and properties, and formats relations 
         Caches and returns the data."""
 
@@ -57,7 +57,7 @@ class Data_Handler:
         new_relations = self.__convert_relations_to_dict(relations)
         
         # Removes bad data however does clean already cleaned cached data but thats fine
-        new_entities, new_properties, new_relations = Cleaner.clean_data(new_entities, new_properties, new_relations)
+        new_entities, new_properties, new_relations = Cleaner.clean_data(source_id, new_entities, new_properties, new_relations)
         
         # Update cache with new data
         self.cached_entities.update(new_entities)
