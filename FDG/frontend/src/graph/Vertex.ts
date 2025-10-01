@@ -195,14 +195,16 @@ export class Vertex {
             ctx.strokeStyle = borderColour;
             ctx.lineWidth = borderWidth;
             ctx.stroke();
-            const labelX = this.pos.x + Vertex.SIMPLE_RADIUS + 10; // 10px gap from circle edge
+            
+            const circleGap = 10
+            const labelX = this.pos.x + Vertex.SIMPLE_RADIUS + circleGap; 
             const labelY = this.pos.y;
 
             ctx.font = TextUtility.getFontString("Arial", 100);
             ctx.textAlign = "left";
             ctx.textBaseline = "middle";
 
-            ctx.fillStyle = this.labelColour || "#000";
+            ctx.fillStyle = "#000";
             ctx.fillText(this._label, labelX, labelY);
             return;
         }
