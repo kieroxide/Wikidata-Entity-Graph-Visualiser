@@ -6,7 +6,7 @@ import { repulsion } from "../Forces/Rust/fdg_wasm/pkg/fdg_wasm";
  * Static class for applying repulsion forces to vertices.
  */
 export class Repulsion {
-    private static readonly STRENGTH = 8000;
+    private static readonly STRENGTH = 4000;
     private static readonly DISTANCE_CUTOFF = 4000;
 
     /** Applies repulsive forces between all pairs of vertices using the WASM-accelerated function. */
