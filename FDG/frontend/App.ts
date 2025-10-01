@@ -18,6 +18,8 @@ function processFrameQueue() {
 }
 processFrameQueue();
 
+let lastTime = performance.now();
+
 /**
  * Main application class for initializing and running the force-directed graph visualizer.
  */
@@ -71,17 +73,19 @@ class Application {
 
     /** Starts the main render and simulation loop. */
     private async startRenderLoop() {
-        const gameLoop = () => {
-            // Run physics simulation
-            this.graphManager.simulate();
-
-            // Render the graph
-            RenderingUtility.render(this.ctx, this.canvas, this.camera, this.graphManager);
+        let frameCount = 0;
+        
+        const gameLoop = (now: number) => {
+            frameCount++;
+            if (frameCount % 2 === 0) {
+                this.graphManager.simulate();
+                RenderingUtility.render(this.ctx, this.canvas, this.camera, this.graphManager);
+            }
 
             // Continue loop
             requestAnimationFrame(gameLoop);
         };
-        gameLoop();
+        requestAnimationFrame(gameLoop);
     }
 }
 
