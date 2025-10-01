@@ -5,6 +5,7 @@ import type { Vec } from "../graph/Vec";
 import { MathUtility } from "../utility/MathUtility";
 import config from "../../../config.json";
 import { RenderingUtility } from "../utility/RenderingUtility";
+import type { Camera } from "./Camera";
 
 interface EntityData {
     label: string;
@@ -24,6 +25,8 @@ interface BackendResponse {
 
 export class GraphManager {
     private static readonly MINIMUM_ENTITY_FETCH = 1;
+    private static readonly INITIAL_SIMULATION_PRELOAD_STEPS = 1000
+
     private readonly _graph: Graph;
     private readonly _ctx: CanvasRenderingContext2D;
 
@@ -59,7 +62,7 @@ export class GraphManager {
             if (!entityId) {
                 return this._graph; // nothing to load
             }
-
+            this._stopExpansion = true;
             const backendResp: BackendResponse = await NetworkUtility.fetchGraphData(entityId, depth, relationLimit);
 
             // Avoids data that has below minimum entities to avoid ugly graphs
@@ -68,6 +71,10 @@ export class GraphManager {
                 return undefined;
             }
             this.parseAndAddToGraph(backendResp.data, append);
+            
+            for (let i = 0; i < GraphManager.INITIAL_SIMULATION_PRELOAD_STEPS; i++) {
+                this._graph.simulate();
+            }
             return this._graph;
         } catch (error) {
             console.error("Error loading graph:", error);
@@ -89,13 +96,8 @@ export class GraphManager {
         // Add / merge vertices
         for (const [vertexId, entity] of Object.entries(data.entities)) {
             if (!this._graph.vertices[vertexId]) {
-                this._graph.vertices[vertexId] = new Vertex(
-                    vertexId,
-                    entity.label,
-                    entity.type,
-                    entity.image,
-                    entity.wikipedia,
-                    this._ctx
+                this._graph.addVertex(
+                    new Vertex(vertexId, entity.label, entity.type, entity.image, entity.wikipedia, this._ctx)
                 );
             }
         }
@@ -170,7 +172,7 @@ export class GraphManager {
 
             const append = true;
             const vertex = this._graph.getVertex(vertexId);
-            if(vertex){
+            if (vertex) {
                 this.parseAndAddToGraph(backendResp.data, append, vertex.pos);
             }
             return this._graph;
