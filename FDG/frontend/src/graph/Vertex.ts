@@ -4,6 +4,7 @@ import { VertexUtility } from "../utility/VertexUtility";
 import { MathUtility } from "../utility/MathUtility";
 import { FrameQueue } from "../utility/FrameQueue";
 import config from "../../../config.json";
+import { TextUtility } from "../utility/TextUtility";
 
 const THUMBNAIL_SIZE: number = config.THUMBNAIL_SIZE;
 
@@ -13,8 +14,10 @@ export class Vertex {
 
     private static readonly RECT_RADIX = 40;
     private static readonly VERTEX_COLOUR = "#fffbe6";
-    static readonly LABEL_MAX_FONT = 22;
-    static readonly LABEL_MIN_FONT = 18;
+
+    static readonly SIMPLE_RADIUS = 40;
+    static readonly LABEL_MAX_FONT = 32;
+    static readonly LABEL_MIN_FONT = 24;
 
     // Euclidean Data
     private readonly _pos: Vec;
@@ -170,8 +173,30 @@ export class Vertex {
         this._velocity.y *= Vertex.DAMPING;
     }
 
-    draw(ctx: CanvasRenderingContext2D) {
+    draw(ctx: CanvasRenderingContext2D, drawSimple: boolean) {
         const cache = VertexUtility.ensureValidCache(ctx, this)!;
+        if (drawSimple) {
+            ctx.beginPath();
+            ctx.arc(this.pos.x, this.pos.y, Vertex.SIMPLE_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = this.labelColour || Vertex.VERTEX_COLOUR;
+            ctx.fill();
+            
+            const borderColour = this._selected ? "yellow" : this.labelColour!;
+            const borderWidth = this._selected ? 8 : 5;
+            ctx.strokeStyle = borderColour;
+            ctx.lineWidth = borderWidth;
+            ctx.stroke();
+            const labelX = this.pos.x + Vertex.SIMPLE_RADIUS + 10; // 10px gap from circle edge
+            const labelY = this.pos.y;
+
+            ctx.font = TextUtility.getFontString("Arial", 100);
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+
+            ctx.fillStyle = this.labelColour || "#000";
+            ctx.fillText(this._label, labelX, labelY);
+            return;
+        }
 
         // Calculate positions dynamically (never cached)
         const boxLeft = this.pos.x - cache.boxWidth / 2;
