@@ -74,9 +74,11 @@ class Application {
     /** Starts the main render and simulation loop. */
     private async startRenderLoop() {
         let frameCount = 0;
-        
+
         const gameLoop = (now: number) => {
             frameCount++;
+            
+            // Ensure 30fps cap
             if (frameCount % 2 === 0) {
                 this.graphManager.simulate();
                 RenderingUtility.render(this.ctx, this.canvas, this.camera, this.graphManager);
