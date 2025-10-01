@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet" />
         <title>Force-Directed Graph Visualizer</title>
-      <script type="module" crossorigin src="/Wikidata-Entity-Graph-Visualiser/assets/index-DljpoODM.js"></script>
+      <script type="module" crossorigin src="/Wikidata-Entity-Graph-Visualiser/assets/index-B4tMeGWf.js"></script>
       <link rel="stylesheet" crossorigin href="/Wikidata-Entity-Graph-Visualiser/assets/index-Jbo4nxyX.css">
     </head>
     <body>
@@ -14,7 +14,7 @@
             <div class="spinner"></div>
         </div>
         <div id="app">
-            <div class="sidebar">
+            <div class="sidebar" id="sidebar">
                 <div class="control-group">
                     <h3>Graph Input</h3>
                     <input type="text" id="wiki-input" placeholder="Search Wikidata entities" autocomplete="off" />
@@ -42,7 +42,7 @@
                             <span>Relation Goal:</span>
                             <span id="relation-limit-value">5</span>
                         </div>
-                        <input id="relation-limit" type="range" min="1" max="20" value="5" />
+                        <input id="relation-limit" type="range" min="1" max="10" value="5" />
                     </div>
                 </div>
 
