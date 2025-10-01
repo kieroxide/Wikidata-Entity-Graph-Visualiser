@@ -11,6 +11,7 @@ const THUMBNAIL_SIZE: number = config.THUMBNAIL_SIZE;
 export class Vertex {
     private static readonly MAX_SPEED = 15;
     private static readonly DAMPING = 0.9;
+    private static readonly MIN_VELOCITY_THRESHOLD = 2; 
 
     private static readonly RECT_RADIX = 40;
     private static readonly VERTEX_COLOUR = "#fffbe6";
@@ -171,6 +172,14 @@ export class Vertex {
 
         this._velocity.x *= Vertex.DAMPING;
         this._velocity.y *= Vertex.DAMPING;
+
+        // Kill tiny velocities to prevent jitter
+        if (Math.abs(this._velocity.x) < Vertex.MIN_VELOCITY_THRESHOLD) {
+            this._velocity.x = 0;
+        }
+        if (Math.abs(this._velocity.y) < Vertex.MIN_VELOCITY_THRESHOLD) {
+            this._velocity.y = 0;
+        }
     }
 
     draw(ctx: CanvasRenderingContext2D, drawSimple: boolean) {
@@ -180,7 +189,7 @@ export class Vertex {
             ctx.arc(this.pos.x, this.pos.y, Vertex.SIMPLE_RADIUS, 0, Math.PI * 2);
             ctx.fillStyle = this.labelColour || Vertex.VERTEX_COLOUR;
             ctx.fill();
-            
+
             const borderColour = this._selected ? "yellow" : this.labelColour!;
             const borderWidth = this._selected ? 8 : 5;
             ctx.strokeStyle = borderColour;
