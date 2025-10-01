@@ -6,6 +6,7 @@ import { Attraction } from "../utility/Forces/Attraction";
 import { GeometryUtility } from "../utility/GeometryUtility";
 import { CanvasUtility } from "../utility/CanvasUtility";
 import { MathUtility } from "../utility/MathUtility.ts";
+import type { Camera } from "../classes/Camera.ts";
 
 export class Graph {
     private static readonly INITIAL_RADIUS = 100;
@@ -19,6 +20,9 @@ export class Graph {
     private _componentOrigins: Set<Vertex>;
     private _selectedVertex?: Vertex;
     private _lastClickedVertex?: Vertex;
+
+    private _vertexArray: Array<Vertex> = [];
+    private _vertexArrayDirty = true;
 
     /** Creates a new graph with rendering context and canvas */
     constructor(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
@@ -47,6 +51,12 @@ export class Graph {
     /** Gets vertex by ID */
     getVertex(id: string) {
         return this._vertices[id];
+    }
+
+    /** Adds vertex to graph */
+    addVertex(vertex: Vertex) {
+        this._vertices[vertex.id] = vertex;
+        this._vertexArrayDirty = true; // Mark cache as dirty
     }
 
     /** Checks if edge already exists between two vertices */
@@ -205,7 +215,7 @@ export class Graph {
     initVerticesPos(vertices = this.getVertices()) {
         const components = this.updateComponents(vertices);
         const numComponents = [...components.keys()].length;
-        
+
         // Gets comp origin positions to set them in a circular pattern around the center of canvas
         const comp_positions = GeometryUtility.circlePoints(
             this._canvas.width / 2,
@@ -256,7 +266,11 @@ export class Graph {
 
     /** Returns all vertices as array */
     getVertices(): Array<Vertex> {
-        return Object.values(this._vertices);
+        if (this._vertexArrayDirty) {
+            this._vertexArray = Object.values(this._vertices);
+            this._vertexArrayDirty = false;
+        }
+        return this._vertexArray;
     }
 
     /** Updates all vertex positions */
@@ -267,10 +281,19 @@ export class Graph {
     }
 
     /** Renders all edges and vertices to canvas */
-    draw() {
-        this._edges.forEach((edge) => edge.draw(this._ctx));
+    draw(camera: Camera) {
+        const drawSimple = camera.drawSimple;
+
+        for (const edge of this._edges) {
+            if (CanvasUtility.isEdgeInView(camera, this._canvas, edge.sourceRef.pos, edge.targetRef.pos)) {
+                edge.draw(this._ctx, drawSimple);
+            }
+        }
+
         for (const vertex of this.getVertices()) {
-            vertex.draw(this._ctx);
+            if (CanvasUtility.isVertexInView(this._ctx, camera, this._canvas, vertex)) {
+                vertex.draw(this._ctx, drawSimple);
+            }
         }
     }
 
@@ -278,6 +301,7 @@ export class Graph {
     clear() {
         this._vertices = {};
         this._edges = [];
+        this._vertexArrayDirty = true;
         this._componentOrigins = new Set();
         this._selectedVertex = undefined;
         this._lastClickedVertex = undefined;
