@@ -4,11 +4,12 @@ import { Vertex } from "../graph/Vertex";
 export class Camera {
     private static readonly MOUSE_SPEED_FACTOR = 1;
     private static readonly ZOOM_SCALE_FACTOR = 1.1;
+    private static readonly SIMPLE_ZOOM_CUTOFF = 0.3;
 
     private _pos: Vec;
     private _zoom: number;
+    
     private _cameraLockedVertex: Vertex | null;
-
     private _drawSimple = false;
 
     constructor() {
@@ -20,6 +21,7 @@ export class Camera {
     get cameraLockedVertex() {
         return this._cameraLockedVertex;
     }
+
     set cameraLockedVertex(vertex: Vertex | null) {
         this._cameraLockedVertex = vertex;
     }
@@ -78,7 +80,7 @@ export class Camera {
         this._zoom *= factor;
         this._pos.x = c_mouse.x - ws_mouse.x * this._zoom;
         this._pos.y = c_mouse.y - ws_mouse.y * this._zoom;
-        if (this._zoom <= 0.3) {
+        if (this._zoom <= Camera.SIMPLE_ZOOM_CUTOFF) {
             this._drawSimple = true;
         } else {
             this._drawSimple = false;
