@@ -10,6 +10,7 @@ export class Attraction {
     private static readonly SPRING = 0.05;
     private static readonly CENTRAL_SPRING = 0.05;
     private static readonly REST_LENGTH = 100;
+    private static readonly CONNECTION_FACTOR = 0.1;
 
     /** Applies a centering force to all origin vertices, pulling them toward the canvas center. */
     static centerAttraction(origins: Set<Vertex>, canvas: HTMLCanvasElement) {
@@ -47,8 +48,12 @@ export class Attraction {
 
             const width_offset = vertexA._cachedDimensions!.boxWidth / 2 + vertexB._cachedDimensions!.boxWidth / 2;
 
-            const avg_mass = (VertexUtility.getOriginalMass(vertexA) + VertexUtility.getOriginalMass(vertexB)) / 2;
-            const rest_length = avg_mass + Attraction.REST_LENGTH;
+            const connectionsA = vertexA.connectedEdges.length;
+            const connectionsB = vertexB.connectedEdges.length;
+            const maxConnections = Math.max(connectionsA, connectionsB);
+
+            const massMultiplier = maxConnections * Attraction.CONNECTION_FACTOR;
+            const rest_length = massMultiplier * Attraction.REST_LENGTH;
             const displacement = distance - (rest_length + width_offset);
 
             const force = strength * displacement;
