@@ -5,7 +5,6 @@ import type { Vec } from "../graph/Vec";
 import { MathUtility } from "../utility/MathUtility";
 import config from "../../../config.json";
 import { RenderingUtility } from "../utility/RenderingUtility";
-import type { Camera } from "./Camera";
 
 interface EntityData {
     label: string;
