@@ -11,7 +11,7 @@ Deployed github page: https://kieroxide.github.io/Wikidata-Entity-Graph-Visualis
 
 -   **SPARQL and Wikidata API:** Gained hands-on experience with SPARQL queries, batching, and handling the quirks of the Wikidata endpoint.
 -   **Graph Data Cleaning:** Learned the importance of cleaning and validating graph data, including handling missing labels, disconnected nodes, and invalid references.
--   **Efficient Optionial Caching:** Implemented caching to avoid redundant API calls and speed up repeated queries. However this is turned off in production as to not waste space on the server.
+-   **Efficient Optional Caching:** Implemented caching to avoid redundant API calls and speed up repeated queries. However this is turned off in production as to not waste space on the server.
 -   **RESTful API Design:** Built a robust Flask API with clear endpoints and flexible parameters for graph exploration.
 -   **Raw Canvas Rendering:** Built a force-directed graph visualizer from scratch using only TypeScript and the HTML5 Canvas API—no d3, no gl-matrix, just custom logic and a Rust/WASM module for physics.
 -   **UI/UX for Graphs:** Designed intuitive controls for panning, zooming, searching, and expanding graphs, making large and complex data feel interactive and approachable.
