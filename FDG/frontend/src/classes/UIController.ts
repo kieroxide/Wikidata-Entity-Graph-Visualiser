@@ -10,7 +10,7 @@ export class UIController {
     };
     private static readonly RELATION_LIMIT = {
         MIN: 1,
-        MAX: 20,
+        MAX: 10,
     };
 
     private readonly _graphManager: GraphManager;
@@ -204,7 +204,7 @@ export class UIController {
             this.setLoadingState(true);
 
             const settings = this.getSettings();
-            const entityInput = this._elements.wikiInput?.value.trim().toUpperCase() || "Q1"; // default to universe
+            const entityInput = this._elements.wikiInput?.value.trim().toUpperCase() || "Universe"; // default to universe
             let entityId = entityInput;
 
             // Looks up QID which is needed for for fetching if not already a QID
