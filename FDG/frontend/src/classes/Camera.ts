@@ -9,6 +9,8 @@ export class Camera {
     private _zoom: number;
     private _cameraLockedVertex: Vertex | null;
 
+    private _drawSimple = false;
+
     constructor() {
         this._pos = new Vec(0, 0);
         this._zoom = 1;
@@ -22,6 +24,10 @@ export class Camera {
         this._cameraLockedVertex = vertex;
     }
 
+    get drawSimple() {
+        return this._drawSimple;
+    }
+
     /**
      * Convert canvas coordinates to world coordinates.
      */
@@ -29,6 +35,15 @@ export class Camera {
         const worldX = (vector.x - this._pos.x) / this._zoom;
         const worldY = (vector.y - this._pos.y) / this._zoom;
         return new Vec(worldX, worldY);
+    }
+
+    /**
+     * Convert world coordinates to canvas coordinates.
+     */
+    worldToCanvas(vector: Vec) {
+        const canvasX = vector.x * this._zoom + this._pos.x;
+        const canvasY = vector.y * this._zoom + this._pos.y;
+        return new Vec(canvasX, canvasY);
     }
 
     /**
@@ -63,5 +78,10 @@ export class Camera {
         this._zoom *= factor;
         this._pos.x = c_mouse.x - ws_mouse.x * this._zoom;
         this._pos.y = c_mouse.y - ws_mouse.y * this._zoom;
+        if (this._zoom <= 0.3) {
+            this._drawSimple = true;
+        } else {
+            this._drawSimple = false;
+        }
     }
 }
