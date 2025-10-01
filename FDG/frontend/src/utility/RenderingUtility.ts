@@ -4,7 +4,6 @@ import { Vec } from "../graph/Vec";
 
 export class RenderingUtility {
     private static readonly BACKGROUND_COLOR = "#faf8f8ff ";
-    static _paperPattern: CanvasPattern | null = null;
 
     /** Renders the graph and background to the canvas. */
     static render(
@@ -16,17 +15,10 @@ export class RenderingUtility {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = RenderingUtility.BACKGROUND_COLOR;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        if (RenderingUtility._paperPattern) {
-            ctx.save();
-            ctx.globalAlpha = 0.5;
-            ctx.fillStyle = RenderingUtility._paperPattern;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.restore();
-        }
 
         ctx.save(); // save and restore to avoid transforms stacking
         camera.applyTransform(ctx, canvas);
-        graphManager.graph.draw();
+        graphManager.graph.draw(camera);
         ctx.restore();
     }
 
