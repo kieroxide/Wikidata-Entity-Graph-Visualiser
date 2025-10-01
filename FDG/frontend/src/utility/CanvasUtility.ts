@@ -1,4 +1,7 @@
+import { Camera } from "../classes/Camera";
 import { Vec } from "../graph/Vec";
+import type { Vertex } from "../graph/Vertex";
+import { VertexUtility } from "./VertexUtility";
 
 export class CanvasUtility {
     private static readonly COLOURS = {
@@ -30,6 +33,91 @@ export class CanvasUtility {
 
     private static _paletteIndex = 0;
 
+    static getCanvasBounds(canvas: HTMLCanvasElement) {
+        // Canvas bounds as Vecs
+        const topLeft = new Vec(0, 0);
+        const topRight = new Vec(canvas.width, 0);
+        const bottomRight = new Vec(canvas.width, canvas.height);
+        const bottomLeft = new Vec(0, canvas.height);
+
+        const canvasEdges = [
+            [topLeft, topRight], // top
+            [topRight, bottomRight], // right
+            [bottomRight, bottomLeft], // bottom
+            [bottomLeft, topLeft], // left
+        ];
+
+        return canvasEdges;
+    }
+
+    /**
+     * Checks if a point is within the visible canvas area
+     */
+    static isPointInView(camera: Camera, canvas: HTMLCanvasElement, point: Vec, margin = 0): boolean {
+        point = camera.worldToCanvas(point);
+        return (
+            point.x >= 0 - margin &&
+            point.x <= canvas.width + margin &&
+            point.y >= 0 - margin &&
+            point.y <= canvas.height + margin
+        );
+    }
+
+    /**
+     * Checks if an edge (line between two points) is within the visible canvas area
+     * Returns true if either endpoint is in view, or if the edge crosses the canvas
+     */
+    static isEdgeInView(camera: Camera, canvas: HTMLCanvasElement, start: Vec, end: Vec, margin = 0): boolean {
+        // If either endpoint is in view
+        if (this.isPointInView(camera, canvas, start, margin) || this.isPointInView(camera, canvas, end, margin)) {
+            return true;
+        }
+
+        const canvasEdges = CanvasUtility.getCanvasBounds(canvas);
+        for (const [edgeStart, edgeEnd] of canvasEdges) {
+            if (CanvasUtility.linesIntersect(camera, start, end, edgeStart, edgeEnd)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if two line segments (p1-p2 and q1-q2) intersect
+     */
+    private static linesIntersect(camera: Camera, aStart: Vec, aEnd: Vec, edgeStart: Vec, EdgeEnd: Vec): boolean {
+        edgeStart = camera.worldToCanvas(edgeStart);
+        EdgeEnd = camera.worldToCanvas(EdgeEnd);
+
+        // Helper to check if three points are in counter-clockwise order
+        function ccw(p1: Vec, p2: Vec, p3: Vec) {
+            return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
+        }
+        return (
+            ccw(aStart, edgeStart, EdgeEnd) !== ccw(aEnd, edgeStart, EdgeEnd) &&
+            ccw(aStart, aEnd, edgeStart) !== ccw(aStart, aEnd, EdgeEnd)
+        );
+    }
+
+    /**
+     *  Checks if a vertex is visible on the canvas, using its position and a radius (bounding circle)
+     *  Uses vertex._cachedDimensions.boxWidth/2 or boxHeight/2 as radius
+     */
+    static isVertexInView(
+        ctx: CanvasRenderingContext2D,
+        camera: Camera,
+        canvas: HTMLCanvasElement,
+        vertex: Vertex,
+        margin = 0
+    ): boolean {
+        VertexUtility.ensureValidCache(ctx, vertex);
+        const dimensions = vertex._cachedDimensions!;
+        const boxWidth = dimensions.boxWidth;
+        const boxHeight = dimensions.boxHeight;
+
+        const radius = Math.max(boxWidth, boxHeight) / 2;
+        return CanvasUtility.isPointInView(camera, canvas, vertex.pos, radius + margin);
+    }
     static nextNiceColor() {
         const color = CanvasUtility.PALETTE[CanvasUtility._paletteIndex % CanvasUtility.PALETTE.length];
         CanvasUtility._paletteIndex++;
@@ -88,10 +176,24 @@ export class CanvasUtility {
     }
 
     /**
-     * Resizes canvas to fill the entire window
+     * Resizes canvas to fill the entire window and prevents blurriness on high-DPI screens
      */
     static resizeCanvas(canvas: HTMLCanvasElement) {
-        canvas.width = window.innerWidth - 300;
-        canvas.height = window.innerHeight;
+        const dpr = window.devicePixelRatio || 1;
+        const sidebar = document.getElementById("sidebar");
+        const sidebarWidth = sidebar ? sidebar.offsetWidth : 0;
+        const width = window.innerWidth - sidebarWidth;
+        const height = window.innerHeight;
+
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset any existing transforms
+            ctx.scale(dpr, dpr);
+        }
     }
 }
