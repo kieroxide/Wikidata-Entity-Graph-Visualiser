@@ -67,7 +67,7 @@ class Application {
         this.graphManager = new GraphManager(this.ctx!, this.canvas);
 
         // Initialize UI and input managers
-        this.uiController = new UIController(this.graphManager);
+        this.uiController = new UIController(this.graphManager, this.camera);
         this.inputManager = new InputManager(this.canvas, this.camera, this.graphManager, this.uiController);
     }
 
@@ -77,7 +77,7 @@ class Application {
 
         const gameLoop = (now: number) => {
             frameCount++;
-            
+
             // Ensure 30fps cap
             if (frameCount % 2 === 0) {
                 this.graphManager.simulate();

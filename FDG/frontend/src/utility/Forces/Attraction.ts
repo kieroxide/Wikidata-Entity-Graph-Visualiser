@@ -14,7 +14,7 @@ export class Attraction {
 
     /** Applies a centering force to all origin vertices, pulling them toward the canvas center. */
     static centerAttraction(origins: Set<Vertex>, canvas: HTMLCanvasElement) {
-        const canvasCenter = new Vec(canvas.width / 2, canvas.height / 2);
+        const canvasCenter = new Vec(canvas.clientWidth / 2, canvas.clientHeight / 2);
 
         origins.forEach((origin) => {
             if (origin.selected) return;

@@ -9,7 +9,7 @@ import { MathUtility } from "../utility/MathUtility.ts";
 import type { Camera } from "../classes/Camera.ts";
 
 export class Graph {
-    private static readonly INITIAL_RADIUS = 100;
+    private static readonly INITIAL_RADIUS = 200;
 
     private readonly _objectColours = new Map<string, string>();
     private readonly _ctx: CanvasRenderingContext2D;
@@ -184,7 +184,7 @@ export class Graph {
             }
 
             if (numOfOldVertices === 0) {
-                midpoint = new Vec(this._canvas.width / 2, this._canvas.height / 2);
+                midpoint = new Vec(this._canvas.clientWidth / 2, this._canvas.clientHeight / 2);
             } else {
                 midpoint = Vec.scalarDivide(midpointsum, numOfOldVertices);
             }
@@ -218,8 +218,8 @@ export class Graph {
 
         // Gets comp origin positions to set them in a circular pattern around the center of canvas
         const comp_positions = GeometryUtility.circlePoints(
-            this._canvas.width / 2,
-            this._canvas.height / 2,
+            this._canvas.clientWidth / 2,
+            this._canvas.clientHeight / 2,
             Graph.INITIAL_RADIUS, // TODO: Radius calc function
             numComponents
         );

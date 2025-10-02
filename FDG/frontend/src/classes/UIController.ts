@@ -2,6 +2,7 @@ import { GraphManager } from "./GraphManager";
 import { MathUtility } from "../utility/MathUtility";
 import { NetworkUtility } from "../utility/NetworkUtility";
 import { RenderingUtility } from "../utility/RenderingUtility";
+import type { Camera } from "./Camera";
 
 export class UIController {
     private static readonly DEPTH_LIMIT = {
@@ -14,6 +15,8 @@ export class UIController {
     };
 
     private readonly _graphManager: GraphManager;
+    private readonly _camera: Camera;
+
     private _suggestions: Array<{
         id: string;
         label: string;
@@ -35,8 +38,9 @@ export class UIController {
         graphStats?: HTMLElement;
     };
 
-    constructor(graphManager: GraphManager) {
+    constructor(graphManager: GraphManager, camera: Camera) {
         this._graphManager = graphManager;
+        this._camera = camera;
         this._suggestions = [];
         this._elements = this.getElements();
         this.setupEventListeners();
@@ -223,7 +227,8 @@ export class UIController {
                 entityId,
                 settings.depth,
                 settings.relationLimit,
-                appendMode
+                appendMode,
+                this._camera
             );
 
             if (appendMode) {

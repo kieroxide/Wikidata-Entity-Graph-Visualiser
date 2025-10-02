@@ -10,8 +10,8 @@ const THUMBNAIL_SIZE: number = config.THUMBNAIL_SIZE;
 
 export class Vertex {
     private static readonly MAX_SPEED = 15;
-    private static readonly DAMPING = 0.9;
-    private static readonly MIN_VELOCITY_THRESHOLD = 2; 
+    private static readonly DAMPING = 0.93;
+    private static readonly MIN_VELOCITY_THRESHOLD = 2;
 
     private static readonly RECT_RADIX = 40;
     private static readonly VERTEX_COLOUR = "#fffbe6";
@@ -190,14 +190,23 @@ export class Vertex {
             ctx.fillStyle = this.labelColour || Vertex.VERTEX_COLOUR;
             ctx.fill();
 
-            const borderColour = this._selected ? "yellow" : this.labelColour!;
-            const borderWidth = this._selected ? 8 : 5;
+            let borderColour = this._selected ? "yellow" : this.labelColour!;
+            let borderWidth = this._selected ? 8 : 5;
+            if (this.expanding) {
+                // Animate border color and width
+                const now = performance.now();
+                // Pulse between two colors
+                const pulse = (Math.sin(now / 250) + 1) / 2;
+                borderColour = `rgba(102, 126, 234, ${0.5 + 0.5 * pulse})`; // blue with pulsing alpha
+                borderWidth = 7 + 5 * pulse;
+            }
+            
             ctx.strokeStyle = borderColour;
             ctx.lineWidth = borderWidth;
             ctx.stroke();
-            
-            const circleGap = 10
-            const labelX = this.pos.x + Vertex.SIMPLE_RADIUS + circleGap; 
+
+            const circleGap = 10;
+            const labelX = this.pos.x + Vertex.SIMPLE_RADIUS + circleGap;
             const labelY = this.pos.y;
 
             ctx.font = TextUtility.getFontString("Arial", 100);

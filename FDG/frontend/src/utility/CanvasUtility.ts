@@ -36,9 +36,9 @@ export class CanvasUtility {
     static getCanvasBounds(canvas: HTMLCanvasElement) {
         // Canvas bounds as Vecs
         const topLeft = new Vec(0, 0);
-        const topRight = new Vec(canvas.width, 0);
-        const bottomRight = new Vec(canvas.width, canvas.height);
-        const bottomLeft = new Vec(0, canvas.height);
+        const topRight = new Vec(canvas.clientWidth, 0);
+        const bottomRight = new Vec(canvas.clientWidth, canvas.clientHeight);
+        const bottomLeft = new Vec(0, canvas.clientHeight);
 
         const canvasEdges = [
             [topLeft, topRight], // top
@@ -57,9 +57,9 @@ export class CanvasUtility {
         point = camera.worldToCanvas(point);
         return (
             point.x >= 0 - margin &&
-            point.x <= canvas.width + margin &&
+            point.x <= canvas.clientWidth + margin &&
             point.y >= 0 - margin &&
-            point.y <= canvas.height + margin
+            point.y <= canvas.clientHeight + margin
         );
     }
 

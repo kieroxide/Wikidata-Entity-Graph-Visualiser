@@ -12,9 +12,9 @@ export class RenderingUtility {
         camera: Camera,
         graphManager: GraphManager
     ) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
         ctx.fillStyle = RenderingUtility.BACKGROUND_COLOR;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 
         ctx.save(); // save and restore to avoid transforms stacking
         camera.applyTransform(ctx, canvas);
