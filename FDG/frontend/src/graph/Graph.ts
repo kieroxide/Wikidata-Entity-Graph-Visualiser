@@ -9,7 +9,7 @@ import { MathUtility } from "../utility/MathUtility.ts";
 import type { Camera } from "../classes/Camera.ts";
 
 export class Graph {
-    private static readonly INITIAL_RADIUS = 200;
+    private static readonly INITIAL_RADIUS = 400;
 
     private readonly _objectColours = new Map<string, string>();
     private readonly _ctx: CanvasRenderingContext2D;
