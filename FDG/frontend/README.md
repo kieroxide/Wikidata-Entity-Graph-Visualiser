@@ -4,6 +4,10 @@ This is the frontend for the Wikidata Entity Graph Visualizer—a web app for ex
 
 ---
 
+## Visit the deployed version to access instantly!
+
+Deployed Github page: https://kieroxide.github.io/Wikidata-Entity-Graph-Visualiser/
+
 ## What I Learnt
 
 -   **Raw Canvas Rendering:** Built a force-directed graph visualizer from scratch using only TypeScript and the HTML5 Canvas API—no d3, no gl-matrix, just custom logic and a custom Rust/WASM module for physics.
@@ -25,12 +29,13 @@ This is the frontend for the Wikidata Entity Graph Visualizer—a web app for ex
 
 ## Features
 
--   Interactive force-directed graph visualization of Wikidata entities and their relations
+-   Interactive force-directed graph visualization of Wikidata entities and  their relations
 -   Search for entities by name (with suggestions)
 -   Adjustable graph depth and relation limits
 -   Pan, zoom, and camera follow on vertices
 -   Expand graph dynamically
 -   Modern, responsive UI
+-   Automatic "simple mode" rendering at low zoom levels for better performance and clarity with large graphs.
 
 ---
 
@@ -42,9 +47,6 @@ This is the frontend for the Wikidata Entity Graph Visualizer—a web app for ex
 4. **Interact**: Double-click a vertex to follow it with the camera, right-click to expand, and use the sidebar for controls and stats.
 
 ---
-## Visit the deployed version to access instantly!
-
-Deployed Github page: https://kieroxide.github.io/Wikidata-Entity-Graph-Visualiser/
 
 ## Example Local Usage
 
