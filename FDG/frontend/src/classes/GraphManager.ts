@@ -5,6 +5,7 @@ import type { Vec } from "../graph/Vec";
 import { MathUtility } from "../utility/MathUtility";
 import config from "../../../config.json";
 import { RenderingUtility } from "../utility/RenderingUtility";
+import type { Camera } from "./Camera";
 
 interface EntityData {
     label: string;
@@ -24,16 +25,18 @@ interface BackendResponse {
 
 export class GraphManager {
     private static readonly MINIMUM_ENTITY_FETCH = 1;
-    private static readonly INITIAL_SIMULATION_PRELOAD_STEPS = 1000
+    private static readonly INITIAL_SIMULATION_PRELOAD_STEPS = 1000;
 
     private readonly _graph: Graph;
     private readonly _ctx: CanvasRenderingContext2D;
+    private readonly _canvas: HTMLCanvasElement;
 
     private _stopExpansion = false;
 
     constructor(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
         this._ctx = ctx;
         this._graph = new Graph(ctx, canvas);
+        this._canvas = canvas;
     }
 
     get graph() {
@@ -55,7 +58,8 @@ export class GraphManager {
         entityId: string | undefined,
         depth: number,
         relationLimit: number,
-        append = false
+        append = false,
+        camera: Camera
     ): Promise<Graph | undefined> {
         try {
             if (!entityId) {
@@ -70,10 +74,11 @@ export class GraphManager {
                 return undefined;
             }
             this.parseAndAddToGraph(backendResp.data, append);
-            
+
             for (let i = 0; i < GraphManager.INITIAL_SIMULATION_PRELOAD_STEPS; i++) {
                 this._graph.simulate();
             }
+            camera.fitGraph(this._graph.getVertices(), this._canvas);
             return this._graph;
         } catch (error) {
             console.error("Error loading graph:", error);
