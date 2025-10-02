@@ -4,17 +4,17 @@ import { Vertex } from "../graph/Vertex";
 export class Camera {
     private static readonly MOUSE_SPEED_FACTOR = 1;
     private static readonly ZOOM_SCALE_FACTOR = 1.1;
-    private static readonly SIMPLE_ZOOM_CUTOFF = 0.3;
+    private static readonly SIMPLE_ZOOM_CUTOFF = 0.275;
 
     private _pos: Vec;
     private _zoom: number;
-    
+
     private _cameraLockedVertex: Vertex | null;
     private _drawSimple = false;
 
     constructor() {
         this._pos = new Vec(0, 0);
-        this._zoom = 1;
+        this._zoom = Camera.SIMPLE_ZOOM_CUTOFF;
         this._cameraLockedVertex = null;
     }
 
@@ -75,15 +75,63 @@ export class Camera {
     /**
      * Zoom in or out at a given mouse position.
      */
-    zoomAt(c_mouse: Vec, ws_mouse: Vec, deltaY: number) {
+    zoomAt(canvas_mouse: Vec, world_mouse: Vec, deltaY: number) {
         const factor = deltaY < 0 ? Camera.ZOOM_SCALE_FACTOR : 1 / Camera.ZOOM_SCALE_FACTOR;
         this._zoom *= factor;
-        this._pos.x = c_mouse.x - ws_mouse.x * this._zoom;
-        this._pos.y = c_mouse.y - ws_mouse.y * this._zoom;
-        if (this._zoom <= Camera.SIMPLE_ZOOM_CUTOFF) {
-            this._drawSimple = true;
-        } else {
-            this._drawSimple = false;
+        this._pos.x = canvas_mouse.x - world_mouse.x * this._zoom;
+        this._pos.y = canvas_mouse.y - world_mouse.y * this._zoom;
+
+        this._drawSimple = this._zoom <= Camera.SIMPLE_ZOOM_CUTOFF;
+    }
+
+    /**
+     * Function to manually set the zoom from a point
+     */
+    setZoomAt(canvasPoint: Vec, worldPoint: Vec, newZoom: number) {
+        this._zoom = newZoom;
+        this._pos.x = canvasPoint.x - worldPoint.x * this._zoom;
+        this._pos.y = canvasPoint.y - worldPoint.y * this._zoom;
+        this._drawSimple = this._zoom <= Camera.SIMPLE_ZOOM_CUTOFF;
+    }
+
+    /**
+     *  Function to set camera to display the whole graph
+     */
+    fitGraph(vertices: Vertex[], canvas: HTMLCanvasElement) {
+        if (vertices.length === 0) return;
+        this._cameraLockedVertex = null;
+
+        // Find bounding box of graph
+        let minX = Infinity,
+            minY = Infinity,
+            maxX = -Infinity,
+            maxY = -Infinity;
+        for (const vertex of vertices) {
+            minX = Math.min(minX, vertex.pos.x);
+            maxX = Math.max(maxX, vertex.pos.x);
+            minY = Math.min(minY, vertex.pos.y);
+            maxY = Math.max(maxY, vertex.pos.y);
         }
+
+        // Compute zoom to fit 
+        const centerX = (minX + maxX) / 2;
+        const centerY = (minY + maxY) / 2;
+        const graphCenter = new Vec(centerX, centerY);
+
+        // Avoid div by 0
+        const graphWidth = Math.max(maxX - minX, 1);
+        const graphHeight = Math.max(maxY - minY, 1);
+
+        const padding = 0.6; 
+        const scaleX = (canvas.clientWidth * padding) / graphWidth;
+        const scaleY = (canvas.clientHeight * padding) / graphHeight;
+        const fitZoom = Math.min(scaleX, scaleY); // More zoomed value
+
+        // Center the bounding box
+        const cssWidth = canvas.clientWidth;
+        const cssHeight = canvas.clientHeight;
+        this.setZoomAt(new Vec(cssWidth / 2, cssHeight / 2), graphCenter, fitZoom);
+
+        this._drawSimple = this._zoom <= Camera.SIMPLE_ZOOM_CUTOFF;
     }
 }
