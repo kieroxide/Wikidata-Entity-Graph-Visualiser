@@ -20,6 +20,7 @@ export class Graph {
     private _componentOrigins: Set<Vertex>;
     private _selectedVertex?: Vertex;
     private _lastClickedVertex?: Vertex;
+    private _hoveredVertex?: Vertex | undefined;
 
     private _vertexArray: Array<Vertex> = [];
     private _vertexArrayDirty = true;
@@ -48,6 +49,30 @@ export class Graph {
         return this._lastClickedVertex;
     }
 
+    set hoveredVertex(vertex: Vertex | undefined) {
+        // Skip if same vertex
+        if (vertex === this._hoveredVertex) return;
+
+        // Reset previous hovered vertex and its neighbors
+        if (this._hoveredVertex) {
+            this._hoveredVertex.highlight = false;
+            for (const neighbour of this._hoveredVertex.neighbours) {
+                neighbour.highlight = false;
+            }
+        }
+
+        // Set new hovered vertex
+        this._hoveredVertex = vertex;
+
+        // Highlight new hovered vertex and its neighbors
+        if (vertex) {
+            vertex.highlight = true;
+            for (const neighbour of vertex.neighbours) {
+                neighbour.highlight = true;
+            }
+        }
+    }
+    
     /** Gets vertex by ID */
     getVertex(id: string) {
         return this._vertices[id];
@@ -133,8 +158,8 @@ export class Graph {
 
         const edge = new Edge(sourceId, targetId, property, this, isBiDirectional);
 
-        sourceVertex.connectedEdges.push(edge);
-        targetVertex.connectedEdges.push(edge);
+        sourceVertex.addConnectedEdge(edge);
+        targetVertex.addConnectedEdge(edge);
         this._edges.push(edge);
 
         return true;
@@ -288,7 +313,7 @@ export class Graph {
             return CanvasUtility.isEdgeInView(camera, this._canvas, edge.sourceRef.pos, edge.targetRef.pos);
         });
 
-        Edge.drawBatched(this._ctx, edgesToDraw, camera.drawSimple);
+        Edge.drawBatched(this._ctx, edgesToDraw, camera.drawSimple, this._hoveredVertex);
 
         for (const vertex of this.getVertices()) {
             if (CanvasUtility.isVertexInView(this._ctx, camera, this._canvas, vertex)) {
