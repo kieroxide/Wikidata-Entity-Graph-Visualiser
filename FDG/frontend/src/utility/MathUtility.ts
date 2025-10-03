@@ -60,7 +60,7 @@ export class MathUtility {
                 layers.get(level)!.push(vertex);
 
                 // Adds all unvisited neighbours to the queue
-                for (const neighbour of VertexUtility.getNeighbours(vertex)) {
+                for (const neighbour of vertex.neighbours) {
                     // Visited guard to prevent cycles in the graph causing an infinite loop
                     if (!visited.has(neighbour)) {
                         visited.add(neighbour);
