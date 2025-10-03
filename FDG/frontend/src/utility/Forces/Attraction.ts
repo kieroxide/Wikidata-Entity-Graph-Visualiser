@@ -48,8 +48,8 @@ export class Attraction {
 
             const width_offset = vertexA._cachedDimensions!.boxWidth / 2 + vertexB._cachedDimensions!.boxWidth / 2;
 
-            const connectionsA = vertexA.connectedEdges.length;
-            const connectionsB = vertexB.connectedEdges.length;
+            const connectionsA = vertexA.neighbours.size;
+            const connectionsB = vertexB.neighbours.size;
             const maxConnections = Math.max(connectionsA, connectionsB);
 
             const massMultiplier = maxConnections * Attraction.CONNECTION_FACTOR;
