@@ -25,7 +25,7 @@ interface BackendResponse {
 
 export class GraphManager {
     private static readonly MINIMUM_ENTITY_FETCH = 1;
-    private static readonly INITIAL_SIMULATION_PRELOAD_STEPS = 1000;
+    private static readonly INITIAL_SIMULATION_PRELOAD_STEPS = 200;
 
     private readonly _graph: Graph;
     private readonly _ctx: CanvasRenderingContext2D;
