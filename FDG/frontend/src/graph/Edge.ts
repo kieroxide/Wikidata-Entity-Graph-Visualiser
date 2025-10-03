@@ -8,6 +8,7 @@ import { VertexUtility } from "../utility/VertexUtility.ts";
 import { TextUtility } from "../utility/TextUtility.ts";
 
 export class Edge {
+    private static readonly MAX_LABEL_VISIBLE_SPEED = 2;
     private static readonly ARROW_HEAD_SIZE = 30;
     private static readonly ARROW_HEAD_ANGLE = Math.PI / 6;
     private static readonly BIDIRECTIONAL_OFFSET_SCALE = 20;
@@ -67,7 +68,7 @@ export class Edge {
     set types(type: string[]) {
         this._types = type;
     }
-    
+
     /**
      * Static method to draw edges in batches by colour
      */
@@ -107,7 +108,10 @@ export class Edge {
             }
 
             // Only draw labels for edges connected to hovered vertex
-            if (!drawSimple && hoveredVertex && !hoveredVertex.selected) {
+            if (!drawSimple && hoveredVertex && !hoveredVertex.selected && hoveredVertex.velocity) {
+                const velocity = hoveredVertex.velocity;
+                const hoveredEdgeSpeed = Math.hypot(velocity.x, velocity.y);
+                if (hoveredEdgeSpeed > Edge.MAX_LABEL_VISIBLE_SPEED) continue;
                 for (const edge of colorEdges) {
                     // Check if edge is connected to hovered vertex
                     if (edge.sourceRef === hoveredVertex || edge.targetRef === hoveredVertex) {
@@ -216,7 +220,7 @@ export class Edge {
         const targetIntersect = GeometryUtility.getBoxIntersect(source, this.targetRef);
 
         // Builds the label to be the longest property string
-        let typeLabel = ""
+        let typeLabel = "";
         for (let i = 0; i < this._types.length; i++) {
             const type = this._types[i];
             if (type.length > typeLabel.length) {
