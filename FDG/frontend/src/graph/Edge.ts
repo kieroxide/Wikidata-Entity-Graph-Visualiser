@@ -67,25 +67,31 @@ export class Edge {
     set types(type: string[]) {
         this._types = type;
     }
+    
     /**
-     * Static method to draw edges in batches by color
+     * Static method to draw edges in batches by colour
      */
-    static drawBatched(ctx: CanvasRenderingContext2D, edges: Edge[], drawSimple: boolean) {
-        // Group edges by color
-        const edgesByColor = new Map<string, Edge[]>();
+    static drawBatched(
+        ctx: CanvasRenderingContext2D,
+        edges: Edge[],
+        drawSimple: boolean,
+        hoveredVertex: Vertex | null = null
+    ) {
+        // Group edges by colour
+        const edgesByColour = new Map<string, Edge[]>();
         for (const edge of edges) {
-            const color = edge.edgeColour || "#00000012";
-            if (!edgesByColor.has(color)) {
-                edgesByColor.set(color, []);
+            const colour = edge.edgeColour || "#00000012";
+            if (!edgesByColour.has(colour)) {
+                edgesByColour.set(colour, []);
             }
-            edgesByColor.get(color)!.push(edge);
+            edgesByColour.get(colour)!.push(edge);
         }
 
-        // Draw each color group
-        for (const [color, colorEdges] of edgesByColor) {
-            // Batch all lines for this color
-            ctx.strokeStyle = color;
-            ctx.fillStyle = color;
+        // Draw each colour group
+        for (const [colour, colorEdges] of edgesByColour) {
+            // Batch all lines for this colour
+            ctx.strokeStyle = colour;
+            ctx.fillStyle = colour;
             ctx.lineWidth = Edge.LINE_SIZE;
             ctx.beginPath();
 
@@ -95,15 +101,18 @@ export class Edge {
 
             ctx.stroke();
 
-            // Draw arrowheads for this color
+            // Draw arrowheads for this colour
             for (const edge of colorEdges) {
                 edge.drawArrowhead(ctx, drawSimple);
             }
 
-            // Draw labels for this color in detailed mode
-            if (!drawSimple) {
+            // Only draw labels for edges connected to hovered vertex
+            if (!drawSimple && hoveredVertex && !hoveredVertex.selected) {
                 for (const edge of colorEdges) {
-                    edge.drawLabelText(ctx, drawSimple);
+                    // Check if edge is connected to hovered vertex
+                    if (edge.sourceRef === hoveredVertex || edge.targetRef === hoveredVertex) {
+                        edge.drawLabelText(ctx, drawSimple);
+                    }
                 }
             }
         }
@@ -207,7 +216,7 @@ export class Edge {
         const targetIntersect = GeometryUtility.getBoxIntersect(source, this.targetRef);
 
         // Builds the label to be the longest property string
-        let typeLabel = "";
+        let typeLabel = ""
         for (let i = 0; i < this._types.length; i++) {
             const type = this._types[i];
             if (type.length > typeLabel.length) {
