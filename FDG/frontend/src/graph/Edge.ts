@@ -8,7 +8,6 @@ import { VertexUtility } from "../utility/VertexUtility.ts";
 import { TextUtility } from "../utility/TextUtility.ts";
 
 export class Edge {
-    private static readonly LINE_SIZE = 4;
     private static readonly ARROW_HEAD_SIZE = 30;
     private static readonly ARROW_HEAD_ANGLE = Math.PI / 6;
     private static readonly BIDIRECTIONAL_OFFSET_SCALE = 20;
@@ -29,6 +28,7 @@ export class Edge {
     private _isBidirectional: boolean;
     private _types: string[];
 
+    static readonly LINE_SIZE = 4;
     edgeColour: string;
 
     constructor(sourceID: string, targetID: string, type: string, graph: Graph, isBiDirectional: boolean = false) {
@@ -67,15 +67,120 @@ export class Edge {
     set types(type: string[]) {
         this._types = type;
     }
+    /**
+     * Static method to draw edges in batches by color
+     */
+    static drawBatched(ctx: CanvasRenderingContext2D, edges: Edge[], drawSimple: boolean) {
+        // Group edges by color
+        const edgesByColor = new Map<string, Edge[]>();
+        for (const edge of edges) {
+            const color = edge.edgeColour || "#00000012";
+            if (!edgesByColor.has(color)) {
+                edgesByColor.set(color, []);
+            }
+            edgesByColor.get(color)!.push(edge);
+        }
 
-    draw(ctx: CanvasRenderingContext2D, drawSimple: boolean) {
-        ctx.strokeStyle = this.edgeColour || "#00000012";
-        ctx.fillStyle = this.edgeColour;
-        ctx.lineWidth = Edge.LINE_SIZE;
-        this.drawArrow(ctx, this._sourceRef, this._targetRef, drawSimple);
-        this.drawLabelText(ctx, drawSimple);
+        // Draw each color group
+        for (const [color, colorEdges] of edgesByColor) {
+            // Batch all lines for this color
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = Edge.LINE_SIZE;
+            ctx.beginPath();
+
+            for (const edge of colorEdges) {
+                edge.addLineToPath(ctx, drawSimple);
+            }
+
+            ctx.stroke();
+
+            // Draw arrowheads for this color
+            for (const edge of colorEdges) {
+                edge.drawArrowhead(ctx, drawSimple);
+            }
+
+            // Draw labels for this color in detailed mode
+            if (!drawSimple) {
+                for (const edge of colorEdges) {
+                    edge.drawLabelText(ctx, drawSimple);
+                }
+            }
+        }
     }
 
+    /**
+     * Adds this edge's line to an existing path (for batched rendering)
+     */
+    addLineToPath(ctx: CanvasRenderingContext2D, drawSimple: boolean) {
+        if (drawSimple) {
+            const sourcePos = this.sourceRef.pos;
+            const targetPos = this.targetRef.pos;
+            ctx.moveTo(sourcePos.x, sourcePos.y);
+            ctx.lineTo(targetPos.x, targetPos.y);
+        } else {
+            const source = this.sourceRef.pos;
+            const intersectTarget = GeometryUtility.getBoxIntersect(source, this.targetRef);
+
+            const dx = intersectTarget.x - source.x;
+            const dy = intersectTarget.y - source.y;
+            const angle = Math.atan2(dy, dx);
+
+            let offset = new Vec(0, 0);
+            if (this._isBidirectional) {
+                offset = RenderingUtility.calculateBidirectionalOffset(dx, dy, Edge.BIDIRECTIONAL_OFFSET_SCALE);
+            }
+
+            const positions = RenderingUtility.calculateArrowPositions(
+                source,
+                intersectTarget,
+                angle,
+                offset,
+                Edge.ARROW_HEAD_SIZE
+            );
+
+            ctx.moveTo(positions.sourceX, positions.sourceY);
+            ctx.lineTo(positions.endX, positions.endY);
+        }
+    }
+
+    /**
+     * Draws the arrowhead for this edge
+     */
+    drawArrowhead(ctx: CanvasRenderingContext2D, drawSimple: boolean) {
+        const source = this.sourceRef.pos;
+        const target = drawSimple ? this.targetRef.pos : GeometryUtility.getBoxIntersect(source, this.targetRef);
+
+        const dx = target.x - source.x;
+        const dy = target.y - source.y;
+        const angle = Math.atan2(dy, dx);
+
+        let arrowX, arrowY;
+
+        if (drawSimple) {
+            const midpoint = Vec.scalarDivide(Vec.add(source, target), 2);
+            arrowX = midpoint.x;
+            arrowY = midpoint.y;
+        } else {
+            let offset = new Vec(0, 0);
+            if (this._isBidirectional) {
+                offset = RenderingUtility.calculateBidirectionalOffset(dx, dy, Edge.BIDIRECTIONAL_OFFSET_SCALE);
+            }
+
+            const positions = RenderingUtility.calculateArrowPositions(
+                source,
+                target,
+                angle,
+                offset,
+                Edge.ARROW_HEAD_SIZE
+            );
+
+            arrowX = positions.targetX;
+            arrowY = positions.targetY;
+        }
+
+        RenderingUtility.drawArrowhead(ctx, arrowX, arrowY, angle, Edge.ARROW_HEAD_SIZE, Edge.ARROW_HEAD_ANGLE);
+    }
     /**
      * Calculates and draws the edge's type property above/below the edge
      */
@@ -130,9 +235,9 @@ export class Edge {
 
             if (width <= maxLabelWidth) {
                 bestSize = mid;
-                low = mid + 1; 
+                low = mid + 1;
             } else {
-                high = mid - 1; 
+                high = mid - 1;
             }
         }
 
@@ -169,7 +274,7 @@ export class Edge {
         }
 
         // Draw text in same orientation of the edge
-        const rotationThreshold = 0.1; 
+        const rotationThreshold = 0.1;
         if (Math.abs(angle) < rotationThreshold) {
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
