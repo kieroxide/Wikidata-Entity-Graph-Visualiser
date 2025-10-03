@@ -284,11 +284,11 @@ export class Graph {
     draw(camera: Camera) {
         const drawSimple = camera.drawSimple;
 
-        for (const edge of this._edges) {
-            if (CanvasUtility.isEdgeInView(camera, this._canvas, edge.sourceRef.pos, edge.targetRef.pos)) {
-                edge.draw(this._ctx, drawSimple);
-            }
-        }
+        const edgesToDraw = this._edges.filter((edge) => {
+            return CanvasUtility.isEdgeInView(camera, this._canvas, edge.sourceRef.pos, edge.targetRef.pos);
+        });
+
+        Edge.drawBatched(this._ctx, edgesToDraw, camera.drawSimple);
 
         for (const vertex of this.getVertices()) {
             if (CanvasUtility.isVertexInView(this._ctx, camera, this._canvas, vertex)) {
