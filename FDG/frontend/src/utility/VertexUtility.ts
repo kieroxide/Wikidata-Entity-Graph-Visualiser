@@ -44,25 +44,13 @@ export class VertexUtility {
     }
 
     /**
-     * Returns all neighboring vertices connected by edges
-     */
-    static getNeighbours(vertex: Vertex): Set<Vertex> {
-        let neighbours = new Set<Vertex>();
-        for (const edge of vertex.connectedEdges) {
-            neighbours.add(edge.targetRef);
-            neighbours.add(edge.sourceRef);
-        }
-        return neighbours;
-    }
-
-    /**
      * Calculates the vertex's mass based on number of connections
      */
     static getOriginalMass(vertex: Vertex) {
-        if (vertex.connectedEdges.length === 0) {
+        if (vertex.neighbours.size === 0) {
             return 1;
         }
-        return vertex.connectedEdges.length;
+        return vertex.neighbours.size;
     }
 
     /**
