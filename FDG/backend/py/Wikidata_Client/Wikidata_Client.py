@@ -8,6 +8,7 @@ from time import sleep
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from random import random
 
 config_path = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "config.json"
@@ -18,7 +19,8 @@ DEFAULT_BATCH_SIZE = 50
 MAX_QUERY_ATTEMPTS = 3
 RELATION_LIMIT = 20
 WIKIDATA_ENDPOINT = "https://query.wikidata.org/sparql"
-RETRY_DELAY = 0.5
+BASE_RETRY_DELAY = 0.5
+MAX_RETRY_DELAY = 4.0
 NUMBER_OF_DATA_WORKERS = 4
 NUMBER_OF_RELATION_WORKERS = 2
 
@@ -57,8 +59,23 @@ class Wikidata_Client:
                     print(f"Query failed after {MAX_QUERY_ATTEMPTS} attempts")
                     return None
                 print(f"Error {e}")
-                sleep(RETRY_DELAY)
+                delay = self._calculate_retry_delay(attempt)
+                sleep(delay)
 
+    def _calculate_retry_delay(self, attempt):
+        """
+        Calculate retry delay using exponential backoff with jitter.
+        """
+        exponential_delay = BASE_RETRY_DELAY * (2 ** attempt)
+        
+        # Add jitter (random 0% to 50% of delay)
+        jitter = random.uniform(0, exponential_delay * 0.5)
+        
+        # Cap at maximum delay
+        total_delay = min(MAX_RETRY_DELAY, exponential_delay + jitter)
+        
+        return total_delay
+    
     def get_entity_data(self, entity_ids) -> dict:
         """Fetch entity data for a set of entity IDs."""
         entities = dict()
