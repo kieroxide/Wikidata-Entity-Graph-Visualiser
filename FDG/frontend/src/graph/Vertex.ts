@@ -109,10 +109,9 @@ export class Vertex {
                 });
             };
         }
-
-        this._sprite = this.getOrCreateSprite(ctx);
-        this.labelColour = undefined;
+        
         this._cachedDimensions = VertexUtility.ensureValidCache(ctx, this);
+        this.labelColour = undefined;
     }
 
     get velocity() {
