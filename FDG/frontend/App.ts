@@ -39,7 +39,12 @@ class Application {
             throw new Error("Canvas element with id 'graphCanvas' not found");
         }
 
-        this.ctx = this.canvas.getContext("2d")!;
+        // Added ctx optimisation options 
+        this.ctx = this.canvas.getContext("2d", {
+            alpha: false,
+            desynchronized: true, 
+            willReadFrequently: false, 
+        })!;
         if (!this.ctx) {
             throw new Error("Unable to get 2D context from canvas");
         }
@@ -74,15 +79,25 @@ class Application {
     /** Starts the main render and simulation loop. */
     private async startRenderLoop() {
         let frameCount = 0;
+        let fps = 0;
+        let lastFpsTime = performance.now();
 
         const gameLoop = (now: number) => {
-            frameCount++;
-
             // Ensure 30fps cap
-            if (frameCount % 2 === 0) {
-                this.graphManager.simulate();
-                RenderingUtility.render(this.ctx, this.canvas, this.camera, this.graphManager);
+            this.graphManager.simulate();
+            RenderingUtility.render(this.ctx, this.canvas, this.camera, this.graphManager);
+            //if (frameCount % 2 === 0) {
+            //    fps++;
+            //}
+            fps++
+            // FPS counter - log every second
+            if (now - lastFpsTime >= 1000) {
+                console.log(`FPS: ${fps}`);
+                fps = 0;
+                lastFpsTime = now;
             }
+
+            frameCount++;
 
             // Continue loop
             requestAnimationFrame(gameLoop);
