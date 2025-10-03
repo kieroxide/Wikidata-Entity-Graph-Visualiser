@@ -18,6 +18,12 @@ export class Vertex {
     private static readonly BORDER_WIDTH = {
         default: 5,
         selected: 8,
+        highlight: 10,
+    };
+
+    private static readonly EFFECTS_BORDER_COLOUR = {
+        selected: "#4CAF50",
+        highlight: "#dc3131ff",
     };
 
     static readonly SIMPLE_RADIUS = 40;
@@ -25,10 +31,11 @@ export class Vertex {
     static readonly LABEL_MIN_FONT = 24;
 
     // Euclidean Data
-    private readonly _pos: Vec;
-    private _velocity: Vec;
-    private readonly _connectedEdges: Array<Edge>;
-    private _selected: boolean;
+    private readonly _pos = new Vec(0, 0);
+    private _velocity = new Vec(0, 0);
+    private readonly _connectedEdges: Array<Edge> = [];
+    private _selected: boolean = false;
+    private _highlight = false;
 
     // Generic Data
     private readonly _id: string;
@@ -78,16 +85,10 @@ export class Vertex {
         wikiTitle: string = "",
         ctx: CanvasRenderingContext2D
     ) {
-        this._pos = new Vec(200, 200);
-        this._velocity = new Vec(0, 0);
-
         this._id = id;
         this._label = label;
         this._type = type;
         this._wikiTitle = wikiTitle;
-
-        this._selected = false;
-        this._connectedEdges = [];
 
         if (imgURL != "") {
             const img = new Image();
@@ -109,7 +110,7 @@ export class Vertex {
                 });
             };
         }
-        
+
         this._cachedDimensions = VertexUtility.ensureValidCache(ctx, this);
         this.labelColour = undefined;
     }
@@ -117,17 +118,14 @@ export class Vertex {
     get velocity() {
         return this._velocity;
     }
+
     killVelocity() {
         this._velocity = new Vec(0, 0);
     }
 
-    get connectedEdges() {
-        return this._connectedEdges;
-    }
-
     get neighbours() {
         const neighbours: Set<Vertex> = new Set();
-        for (const edge of this.connectedEdges) {
+        for (const edge of this._connectedEdges) {
             if (edge.sourceRef !== this) {
                 neighbours.add(edge.sourceRef);
             }
@@ -167,6 +165,35 @@ export class Vertex {
         return this._pos;
     }
 
+    private get _borderColour() {
+        if (this._selected) {
+            return Vertex.EFFECTS_BORDER_COLOUR.selected;
+        } else if (this._highlight) {
+            return Vertex.EFFECTS_BORDER_COLOUR.highlight;
+        } else {
+            return this.labelColour!;
+        }
+    }
+
+    private get _borderWidth() {
+        if (this._selected) {
+            return Vertex.BORDER_WIDTH.selected;
+        } else if (this._highlight) {
+            return Vertex.BORDER_WIDTH.highlight;
+        } else {
+            return Vertex.BORDER_WIDTH.default;
+        }
+    }
+
+    set highlight(highlight: boolean) {
+        this._highlight = highlight;
+    }
+
+    addConnectedEdge(edge: Edge) {
+        this._connectedEdges.push(edge);
+        this._sprite = undefined; // reset sprite as large vertex needs to be computed
+    }
+
     /**
      * Creates and stored off-screen canvas for vertex. Avoids rendering a new Vertex each frame
      */
@@ -176,7 +203,7 @@ export class Vertex {
         }
 
         const cache = VertexUtility.ensureValidCache(ctx, this)!;
-        const maxBorderWidth = 8; // Use max possible border width
+        const maxBorderWidth = Math.max(...Object.values(Vertex.BORDER_WIDTH));
         const antiAliasingBuffer = 4;
         const margin = maxBorderWidth * 2 + antiAliasingBuffer;
 
@@ -243,8 +270,8 @@ export class Vertex {
             ctx.fill();
 
             // Border selection and rendering
-            let borderColour = this._selected ? "yellow" : this.labelColour!;
-            let borderWidth = this._selected ? 8 : 5;
+            let borderColour = this._borderColour;
+            let borderWidth = this._borderWidth;
             if (this.expanding) {
                 // Animate border color and width
                 const now = performance.now();
@@ -278,23 +305,14 @@ export class Vertex {
         const boxLeft = this.pos.x - cache.boxWidth / 2;
         const boxTop = this.pos.y - cache.boxHeight / 2;
 
-        let borderColour: string;
-        let borderWidth: number;
+        const borderColour = this._borderColour;
+        let borderWidth = this._borderWidth;
 
         if (this.expanding) {
             // Expanding animation
             const now = performance.now();
             const pulse = (Math.sin(now / 250) + 1) / 2;
-            borderColour = `rgba(102, 126, 234, ${0.5 + 0.5 * pulse})`;
-            borderWidth = 7 + 5 * pulse;
-        } else if (this._selected) {
-            // Selected state
-            borderColour = "yellow";
-            borderWidth = Vertex.BORDER_WIDTH.selected;
-        } else {
-            // Default state
-            borderColour = this.labelColour!;
-            borderWidth = Vertex.BORDER_WIDTH.default;
+            borderWidth = borderWidth + 10 * pulse;
         }
 
         ctx.strokeStyle = borderColour;
