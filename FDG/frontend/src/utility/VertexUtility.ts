@@ -66,77 +66,76 @@ export class VertexUtility {
     }
 
     /**
-     *  Draws Vertex that only has text
+     *  Draws Vertex Sprite that only has text
      */
-    static drawTextVertex(ctx: CanvasRenderingContext2D, vertex: Vertex) {
+    static preloadTextSprite(spriteCtx: CanvasRenderingContext2D, vertex: Vertex) {
         const cache = vertex._cachedDimensions!;
-
         const lineHeight = cache.fontSize + VertexUtility.TEXT_LINE_SPACING;
-        const labelY = vertex.pos.y - lineHeight / 2;
-        const typeY = vertex.pos.y + lineHeight / 2;
+        const labelY = -(lineHeight / 2);
+        const typeY = lineHeight / 2;
 
         // Draw label text
-        ctx.font = TextUtility.getFontString(FONT.FAMILY, cache.fontSize);
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = "black";
-        ctx.fillText(vertex.label, vertex.pos.x, labelY);
+        spriteCtx.font = TextUtility.getFontString(FONT.FAMILY, cache.fontSize);
+        spriteCtx.textAlign = "center";
+        spriteCtx.textBaseline = "middle";
+        spriteCtx.fillStyle = "black";
+        spriteCtx.fillText(vertex.label, 0, labelY);
 
         // Draw type text smaller
         const typeFontSize = Math.max(12, cache.fontSize - VertexUtility.TYPE_FONT_SIZE_REDUCTION);
-        ctx.font = TextUtility.getFontString(FONT.FAMILY, typeFontSize);
-        ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-        ctx.fillText(vertex.type, vertex.pos.x, typeY);
+        spriteCtx.font = TextUtility.getFontString(FONT.FAMILY, typeFontSize);
+        spriteCtx.fillStyle = "rgba(0, 0, 0, 0.8)";
+        spriteCtx.fillText(vertex.type, 0, typeY);
     }
 
     /**
-     *  Draws Vertex that has an image
+     *  Preloads Vertex sprite that has an image
      */
-    static drawImageVertex(ctx: CanvasRenderingContext2D, vertex: Vertex) {
+    static preloadImageSprite(spriteCtx: CanvasRenderingContext2D, vertex: Vertex) {
         const cache = vertex._cachedDimensions!;
 
-        const imageX = vertex.pos.x - cache.boxWidth / 2 + cache.padding + cache.imgSize / 2;
-        const imageY = vertex.pos.y;
+        const imageX = -cache.boxWidth / 2 + cache.padding + cache.imgSize / 2;
+        const imageY = 0;
         const textX = imageX + cache.imgSize / 2 + cache.gap;
 
         const lineHeight = cache.fontSize + VertexUtility.TEXT_LINE_SPACING;
-        const labelY = vertex.pos.y - lineHeight / 2;
-        const typeY = vertex.pos.y + lineHeight / 2;
+        const labelY = -lineHeight / 2;
+        const typeY = lineHeight / 2;
 
         // Draw circular image
         const imageToDraw = vertex.thumbnail || vertex.img!;
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(imageX, imageY, cache.imgSize / 2, 0, Math.PI * 2);
-        ctx.clip();
-        ctx.drawImage(
+        spriteCtx.save();
+        spriteCtx.beginPath();
+        spriteCtx.arc(imageX, imageY, cache.imgSize / 2, 0, Math.PI * 2);
+        spriteCtx.clip();
+        spriteCtx.drawImage(
             imageToDraw,
             imageX - cache.imgSize / 2,
             imageY - cache.imgSize / 2,
             cache.imgSize,
             cache.imgSize
         );
-        ctx.restore();
+        spriteCtx.restore();
 
         // Draw image border
-        ctx.beginPath();
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 3;
-        ctx.arc(imageX, imageY, cache.imgSize / 2, 0, Math.PI * 2);
-        ctx.stroke();
+        spriteCtx.beginPath();
+        spriteCtx.strokeStyle = "white";
+        spriteCtx.lineWidth = 3;
+        spriteCtx.arc(imageX, imageY, cache.imgSize / 2, 0, Math.PI * 2);
+        spriteCtx.stroke();
 
         // Draw label text
-        ctx.font = TextUtility.getFontString(FONT.FAMILY, cache.fontSize);
-        ctx.textAlign = "left";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = "black";
-        ctx.fillText(vertex.label, textX, labelY);
+        spriteCtx.font = TextUtility.getFontString(FONT.FAMILY, cache.fontSize);
+        spriteCtx.textAlign = "left";
+        spriteCtx.textBaseline = "middle";
+        spriteCtx.fillStyle = "black";
+        spriteCtx.fillText(vertex.label, textX, labelY);
 
         // Draw type text in smaller font
         const typeFontSize = Math.max(12, cache.fontSize - VertexUtility.TYPE_FONT_SIZE_REDUCTION);
-        ctx.font = TextUtility.getFontString(FONT.FAMILY, typeFontSize);
-        ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-        ctx.fillText(vertex.type, textX, typeY);
+        spriteCtx.font = TextUtility.getFontString(FONT.FAMILY, typeFontSize);
+        spriteCtx.fillStyle = "rgba(0, 0, 0, 0.8)";
+        spriteCtx.fillText(vertex.type, textX, typeY);
     }
 
     /**
