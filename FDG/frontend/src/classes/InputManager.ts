@@ -39,13 +39,15 @@ export class InputManager {
 
         // One expansion click at a time
         if (this.isExpandingVertex) {
-            RenderingUtility.showError("Already Expanding a Vertex. Use stop expansions button to cancel current expansion");
+            RenderingUtility.showError(
+                "Already Expanding a Vertex. Use stop expansions button to cancel current expansion"
+            );
             return;
-        } 
+        }
 
         const graph = this.graphManager.graph;
         const vertexToExpand = graph.lastClickedVertex;
-        const neighboursBeforeExpansion = vertexToExpand?.neighbours.size
+        const neighboursBeforeExpansion = vertexToExpand?.neighbours.size;
 
         if (vertexToExpand) {
             const settings = this.uiController.getSettings();
@@ -58,7 +60,7 @@ export class InputManager {
             );
             this.isExpandingVertex = false;
         }
-        
+
         if (neighboursBeforeExpansion == vertexToExpand?.neighbours.size) {
             RenderingUtility.showError("No entities found. Increase relation goal or try another");
         }
@@ -70,7 +72,7 @@ export class InputManager {
         let hitVertex: Vertex | null = null;
 
         // Check vertices for being clicked on
-        for (const vertex of Object.values(graph.vertices)) {
+        for (const vertex of graph.getVertices()) {
             if (VertexUtility.pointInBoundary(mousePos, this.graphManager.ctx, this.camera, vertex)) {
                 hitVertex = vertex;
             }
@@ -113,19 +115,29 @@ export class InputManager {
             this.camera.pan(e.movementX, e.movementY);
         } else {
             // Handle vertex dragging
+            const mousePos = CanvasUtility.browserToCanvas(this.canvas, e);
+
             const graph = this.graphManager.graph;
             if (graph.selectedVertex) {
                 if (this.camera.cameraLockedVertex === graph.selectedVertex) {
                     return;
                 }
 
-                const mousePos = CanvasUtility.browserToCanvas(this.canvas, e);
                 const worldPos = this.camera.canvasToWorld(mousePos);
 
                 // Update vertex position
                 graph.selectedVertex.pos.x = worldPos.x;
                 graph.selectedVertex.pos.y = worldPos.y;
             }
+
+            // Check vertices for being hovered over
+            for (const vertex of graph.getVertices()) {
+                if (VertexUtility.pointInBoundary(mousePos, this.graphManager.ctx, this.camera, vertex)) {
+                    graph.hoveredVertex = vertex;
+                    return
+                }
+            }
+            graph.hoveredVertex = undefined;
         }
     }
 
