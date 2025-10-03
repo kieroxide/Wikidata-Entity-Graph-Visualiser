@@ -1,5 +1,4 @@
 import { Vertex } from "../graph/Vertex";
-import { VertexUtility } from "./VertexUtility";
 
 export class MathUtility {
     /**
