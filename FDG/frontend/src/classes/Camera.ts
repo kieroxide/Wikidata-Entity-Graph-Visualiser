@@ -55,8 +55,8 @@ export class Camera {
         if (this._cameraLockedVertex) {
             const vertexPosition = this._cameraLockedVertex.pos;
             const vertexCamPosition = new Vec(
-                canvas.width / 2 - vertexPosition.x * this._zoom,
-                canvas.height / 2 - vertexPosition.y * this._zoom
+                canvas.clientWidth / 2 - vertexPosition.x * this._zoom,
+                canvas.clientHeight / 2 - vertexPosition.y * this._zoom
             );
             this._pos = vertexCamPosition;
         }
@@ -113,7 +113,7 @@ export class Camera {
             maxY = Math.max(maxY, vertex.pos.y);
         }
 
-        // Compute zoom to fit 
+        // Compute zoom to fit
         const centerX = (minX + maxX) / 2;
         const centerY = (minY + maxY) / 2;
         const graphCenter = new Vec(centerX, centerY);
@@ -122,7 +122,7 @@ export class Camera {
         const graphWidth = Math.max(maxX - minX, 1);
         const graphHeight = Math.max(maxY - minY, 1);
 
-        const padding = 0.6; 
+        const padding = 0.6;
         const scaleX = (canvas.clientWidth * padding) / graphWidth;
         const scaleY = (canvas.clientHeight * padding) / graphHeight;
         const fitZoom = Math.min(scaleX, scaleY); // More zoomed value
