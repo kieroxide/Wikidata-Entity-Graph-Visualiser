@@ -196,14 +196,14 @@ export class GraphManager {
         let expandedRelationCount = 0;
         // Due to my backend filtering, returned nodes can be much less than asked for
         // So this loops attempts calling the backend for increasing relationLimits
-        while (vertex.connectedEdges.length < entityGoal) {
+        while (vertex.neighbours.size < entityGoal) {
             expandedRelationCount++;
-            let numBeforeExpansion = vertex.connectedEdges.length;
+            let numBeforeExpansion = vertex.neighbours.size;
 
             const depth = 1;
             await this.appendVertexExpansion(vertex.id, depth, entityGoal + expandedRelationCount);
 
-            if (numBeforeExpansion === vertex.connectedEdges.length) {
+            if (numBeforeExpansion === vertex.neighbours.size) {
                 attempts += 1;
             }
             if (attempts === MAXIMUM_ATTEMPTS) {
