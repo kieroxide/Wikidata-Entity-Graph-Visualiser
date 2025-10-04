@@ -29,7 +29,7 @@ Deployed Github page: https://kieroxide.github.io/Wikidata-Entity-Graph-Visualis
 
 ## Features
 
--   Interactive force-directed graph visualization of Wikidata entities and  their relations
+-   Interactive force-directed graph visualization of Wikidata entities and their relations
 -   Search for entities by name (with suggestions)
 -   Adjustable graph depth and relation limits
 -   Pan, zoom, and camera follow on vertices
@@ -99,6 +99,27 @@ npm run start:both
 -   TypeScript
 -   Vite
 -   Rust/WASM (for force calculations)
+
+---
+
+## Performance & Optimizations
+
+-   Offscreen sprite caching for vertices: vertex visuals (labels, thumbnails) are pre-rendered to offscreen canvases. This reduces expensive text and shape draws during the main paint loop and improves frame stability.
+-   Batched edge rendering: edges are grouped by stroke style/color and drawn in optimized batches to minimize canvas state changes and stroke calls.
+-   Hover-only labels and LOD: the app only renders full labels for hovered or nearby nodes. At low zoom levels a "simple mode" is used to keep rendering fast and the visualization readable.
+-   Offscreen edge cache: when the camera and graph are static, edge geometry is cached to an offscreen canvas and reused across frames.
+-   Dynamic borders: animated borders are drawn separately from cached sprites so animations don't force sprite recreation each frame.
+-   WASM for physics: the Rust/WASM physics module computes forces efficiently so the browser can focus on rendering and interaction.
+
+These optimizations were implemented after profiling showed the browser "painting" stage to be the largest bottleneck. Together they yield significant reductions in paint time and allow smooth animation even with hundreds of entities.
+
+---
+
+## Notable recent changes (2025)
+
+-   Added per-vertex offscreen sprite caching and edge batching to dramatically reduce painting work.
+-   Implemented hover-only labels and a robust LOD strategy for simple vs detailed rendering.
+-   Backend reliability improvements: per-entity SPARQL limiting (fixing inconsistent relation counts), URL-length-safe batched queries, and exponential backoff with jitter for retries.
 
 ---
 
