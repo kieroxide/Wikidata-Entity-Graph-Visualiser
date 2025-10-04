@@ -1,8 +1,11 @@
 # Wikidata Entity Graph Visualizer
 
-A full-stack project for exploring and visualizing entity-relationship graphs from Wikidata using a custom force-directed layout. The project consists of a Python backend for crawling, cleaning, and serving Wikidata graphs, and a TypeScript/Vite frontend for interactive visualization.
+A full-stack project for exploring and visualizing entity-relationship graphs from Wikidata using a custom force-directed layout. The project consists of a Python backend for crawling, cleaning, and serving Wikidata graphs, and a TypeScript/Vite frontend for interactive visualization. 
+
+Stable 60fps up to 250 entities
 
 ---
+
 ## Try it out now online!
 
 Deployed github page: https://kieroxide.github.io/Wikidata-Entity-Graph-Visualiser/
@@ -56,6 +59,27 @@ Deployed github page: https://kieroxide.github.io/Wikidata-Entity-Graph-Visualis
 -   REST API for programmatic access to graph data
 -   WASM-accelerated physics for smooth, large-graph rendering
 -   Easy deployment (local or cloud)
+
+---
+
+## Performance & Optimizations
+
+-   Offscreen sprite caching for vertices: vertex visuals (labels, thumbnails) are pre-rendered to offscreen canvases so the main paint loop issues far fewer expensive text/shape draws. This dramatically reduces "painting" time in DevTools and keeps animation smooth at high node counts.
+-   Batched edge rendering: edges are grouped (by stroke style/color) and drawn in batches to minimize context state changes and stroke() calls.
+-   Hover-only labels and LOD: labels and rich text are rendered only for hovered or nearby nodes, while a lighter "simple mode" is used at low zoom levels to keep the scene readable and fast.
+-   Offscreen edge cache: when the graph and camera are static, edge geometry is cached to an offscreen canvas and re-used across frames to avoid re-stroking thousands of paths.
+-   Dynamic borders: animated vertex borders are rendered separately from cached sprites to avoid recreating sprites each frame while preserving smooth animations.
+-   WASM for physics: the Rust/WASM module performs force calculations efficiently so the browser can dedicate more cycles to rendering and interaction.
+
+These changes were targeted at reducing the browser "painting" phase (the most expensive step observed in profiling) and have been validated during development — stable 60 FPS is achievable for moderate graphs (~250 nodes) and the app scales gracefully when many nodes are off-screen.
+
+---
+
+## Notable recent changes 
+
+-   Added offscreen sprite caching and batching to reduce paint time in the browser.
+-   Implemented hover-only labels and a robust simple/detailed LOD rendering mode.
+-   Improved backend SPARQL reliability with per-entity limits and exponential backoff with jitter.
 
 ---
 
