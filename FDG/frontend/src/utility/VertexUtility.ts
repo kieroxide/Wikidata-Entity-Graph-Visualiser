@@ -20,7 +20,12 @@ export class VertexUtility {
     /**
      * Checks if a point is within the vertex's boundary box
      */
-    static pointInBoundary(point: Vec, ctx: CanvasRenderingContext2D, camera: Camera, vertex: Vertex): boolean {
+    static pointInBoundary(
+        point: Vec,
+        ctx: CanvasRenderingContext2D,
+        camera: Camera,
+        vertex: Vertex
+    ): boolean {
         const boundaries = this.getBoundaries(ctx, vertex);
         const ws_point = camera.canvasToWorld(point);
 
@@ -129,12 +134,23 @@ export class VertexUtility {
     /**
      * **Calculates and caches vertex drawn dimensions
      */
-    static calculateAndCacheDimensions(ctx: CanvasRenderingContext2D, vertex: Vertex, forceFontSize?: number) {
+    static calculateAndCacheDimensions(
+        ctx: CanvasRenderingContext2D,
+        vertex: Vertex,
+        forceFontSize?: number
+    ) {
         const mass = this.getOriginalMass(vertex);
         const fontSize =
             forceFontSize ||
-            MathUtility.clamp(FONT.SIZE + mass * FONT.MASS_WEIGHT, Vertex.LABEL_MIN_FONT, Vertex.LABEL_MAX_FONT);
-        const hasImage = !!(vertex.thumbnail || (vertex.img && vertex.img.complete && vertex.img.naturalWidth > 0));
+            MathUtility.clamp(
+                FONT.SIZE + mass * FONT.MASS_WEIGHT,
+                Vertex.LABEL_MIN_FONT,
+                Vertex.LABEL_MAX_FONT
+            );
+        const hasImage = !!(
+            vertex.thumbnail ||
+            (vertex.img && vertex.img.complete && vertex.img.naturalWidth > 0)
+        );
 
         // Measure text dimensions
         ctx.font = TextUtility.getFontString(FONT.FAMILY, fontSize);
@@ -142,7 +158,10 @@ export class VertexUtility {
         const labelWidth = labelMetrics.width;
         const labelHeight = TextUtility.getTextHeight(labelMetrics);
 
-        const typeFontSize = Math.max(this.MIN_TYPE_FONT_SIZE, fontSize - this.TYPE_FONT_SIZE_REDUCTION);
+        const typeFontSize = Math.max(
+            this.MIN_TYPE_FONT_SIZE,
+            fontSize - this.TYPE_FONT_SIZE_REDUCTION
+        );
         ctx.font = TextUtility.getFontString(FONT.FAMILY, typeFontSize);
         const typeMetrics = ctx.measureText(vertex.type);
         const typeWidth = typeMetrics.width;
@@ -167,7 +186,8 @@ export class VertexUtility {
             // Text-only layout
             imgSize = 0;
             boxWidth = maxTextWidth + this.BOX_PADDING * 2;
-            boxHeight = labelHeight + typeHeight + this.BOX_PADDING + this.TEXT_ONLY_BOX_EXTRA_HEIGHT;
+            boxHeight =
+                labelHeight + typeHeight + this.BOX_PADDING + this.TEXT_ONLY_BOX_EXTRA_HEIGHT;
         }
 
         vertex._cachedDimensions = {

@@ -1,10 +1,10 @@
-import { Vertex } from "./Vertex.ts";
-import { Vec } from "./Vec.ts";
-import { RenderingUtility } from "../utility/RenderingUtility.ts";
-import { GeometryUtility } from "../utility/GeometryUtility.ts";
-import { FONT } from "../../constants/font.ts";
-import { VertexUtility } from "../utility/VertexUtility.ts";
-import { TextUtility } from "../utility/TextUtility.ts";
+import { Vertex } from "./Vertex";
+import { Vec } from "./Vec";
+import { RenderingUtility } from "../utility/RenderingUtility";
+import { GeometryUtility } from "../utility/GeometryUtility";
+import { FONT } from "../../constants/font";
+import { VertexUtility } from "../utility/VertexUtility";
+import { TextUtility } from "../utility/TextUtility";
 
 export class Edge {
     private static readonly MAX_LABEL_VISIBLE_SPEED = 2;
@@ -31,7 +31,12 @@ export class Edge {
     static readonly LINE_SIZE = 4;
     edgeColour: string;
 
-    constructor(sourceRef: Vertex, targetRef: Vertex, type: string, isBiDirectional: boolean = false) {
+    constructor(
+        sourceRef: Vertex,
+        targetRef: Vertex,
+        type: string,
+        isBiDirectional: boolean = false
+    ) {
         this._isBidirectional = isBiDirectional;
         this._types = [type];
         this.edgeColour = "#000000"; // Default colour
@@ -140,7 +145,11 @@ export class Edge {
 
             let offset = new Vec(0, 0);
             if (this._isBidirectional) {
-                offset = RenderingUtility.calculateBidirectionalOffset(dx, dy, Edge.BIDIRECTIONAL_OFFSET_SCALE);
+                offset = RenderingUtility.calculateBidirectionalOffset(
+                    dx,
+                    dy,
+                    Edge.BIDIRECTIONAL_OFFSET_SCALE
+                );
             }
 
             const positions = RenderingUtility.calculateArrowPositions(
@@ -161,7 +170,9 @@ export class Edge {
      */
     drawArrowhead(ctx: CanvasRenderingContext2D, drawSimple: boolean) {
         const source = this.sourceRef.pos;
-        const target = drawSimple ? this.targetRef.pos : GeometryUtility.getBoxIntersect(source, this.targetRef);
+        const target = drawSimple
+            ? this.targetRef.pos
+            : GeometryUtility.getBoxIntersect(source, this.targetRef);
 
         const dx = target.x - source.x;
         const dy = target.y - source.y;
@@ -176,7 +187,11 @@ export class Edge {
         } else {
             let offset = new Vec(0, 0);
             if (this._isBidirectional) {
-                offset = RenderingUtility.calculateBidirectionalOffset(dx, dy, Edge.BIDIRECTIONAL_OFFSET_SCALE);
+                offset = RenderingUtility.calculateBidirectionalOffset(
+                    dx,
+                    dy,
+                    Edge.BIDIRECTIONAL_OFFSET_SCALE
+                );
             }
 
             const positions = RenderingUtility.calculateArrowPositions(
@@ -191,7 +206,14 @@ export class Edge {
             arrowY = positions.targetY;
         }
 
-        RenderingUtility.drawArrowhead(ctx, arrowX, arrowY, angle, Edge.ARROW_HEAD_SIZE, Edge.ARROW_HEAD_ANGLE);
+        RenderingUtility.drawArrowhead(
+            ctx,
+            arrowX,
+            arrowY,
+            angle,
+            Edge.ARROW_HEAD_SIZE,
+            Edge.ARROW_HEAD_ANGLE
+        );
     }
     /**
      * Calculates and draws the edge's type property above/below the edge
@@ -229,7 +251,8 @@ export class Edge {
 
         // Calculates the best font size for the edge based of vertex distance
         const padding = Edge.LABEL_PADDING;
-        const distanceInbetween = GeometryUtility.distance(sourceIntersect, targetIntersect) - padding;
+        const distanceInbetween =
+            GeometryUtility.distance(sourceIntersect, targetIntersect) - padding;
         const maxLabelWidth = distanceInbetween * Edge.LABEL_COVERAGE_FACTOR;
         if (maxLabelWidth <= 0) return;
 
@@ -268,7 +291,8 @@ export class Edge {
         let angle = GeometryUtility.lineAngle(source, target);
         const perpAngle = angle + Math.PI / 2;
 
-        let distanceFromMidpoint = Edge.LABEL_DISTANCE_FROM_MIDPOINT + TextUtility.getTextHeight(labelMetrics) / 2;
+        let distanceFromMidpoint =
+            Edge.LABEL_DISTANCE_FROM_MIDPOINT + TextUtility.getTextHeight(labelMetrics) / 2;
 
         // Add extra offset if biDirectional
         if (this._isBidirectional) {
@@ -320,7 +344,12 @@ export class Edge {
     /**
      * Draw an arrow from source to target vertex
      */
-    drawArrow(ctx: CanvasRenderingContext2D, sourceVertex: Vertex, targetVertex: Vertex, drawSimple: boolean) {
+    drawArrow(
+        ctx: CanvasRenderingContext2D,
+        sourceVertex: Vertex,
+        targetVertex: Vertex,
+        drawSimple: boolean
+    ) {
         if (drawSimple) {
             const sourcePos = sourceVertex.pos;
             const targetPos = targetVertex.pos;
@@ -359,7 +388,11 @@ export class Edge {
         // Calculate offset for bidirectional arrows so they dont overlap
         let offset = new Vec(0, 0);
         if (this._isBidirectional) {
-            offset = RenderingUtility.calculateBidirectionalOffset(dx, dy, Edge.BIDIRECTIONAL_OFFSET_SCALE);
+            offset = RenderingUtility.calculateBidirectionalOffset(
+                dx,
+                dy,
+                Edge.BIDIRECTIONAL_OFFSET_SCALE
+            );
         }
 
         const positions = RenderingUtility.calculateArrowPositions(

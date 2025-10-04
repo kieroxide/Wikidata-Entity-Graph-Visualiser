@@ -16,7 +16,12 @@ export class InputManager {
     private isExpandingVertex = false;
     private clickTimer: number | null = null;
 
-    constructor(canvas: HTMLCanvasElement, camera: Camera, graphManager: GraphManager, uiController: UIController) {
+    constructor(
+        canvas: HTMLCanvasElement,
+        camera: Camera,
+        graphManager: GraphManager,
+        uiController: UIController
+    ) {
         this.canvas = canvas;
         this.camera = camera;
         this.graphManager = graphManager;
@@ -25,12 +30,12 @@ export class InputManager {
     }
 
     private setupEventListeners() {
-        this.canvas.addEventListener("contextmenu", (e) => this.handleRightClick(e)); // expand from vertex
-        this.canvas.addEventListener("mousedown", (e) => this.handleMouseDown(e)); // dragging Camera/Vertex
-        this.canvas.addEventListener("mousemove", (e) => this.handleMouseMove(e)); // also dragging
+        this.canvas.addEventListener("contextmenu", e => this.handleRightClick(e)); // expand from vertex
+        this.canvas.addEventListener("mousedown", e => this.handleMouseDown(e)); // dragging Camera/Vertex
+        this.canvas.addEventListener("mousemove", e => this.handleMouseMove(e)); // also dragging
         this.canvas.addEventListener("mouseup", () => this.handleMouseUp()); // also dragging
         this.canvas.addEventListener("mouseleave", () => this.handleMouseLeave()); // also dragging
-        this.canvas.addEventListener("wheel", (e) => this.handleWheel(e)); // zooming in/out
+        this.canvas.addEventListener("wheel", e => this.handleWheel(e)); // zooming in/out
     }
 
     // Handles right click expansion of vertex/vertices
@@ -44,15 +49,15 @@ export class InputManager {
             );
             return;
         }
-        
+
         const graph = this.graphManager.graph;
         const vertexToExpand = graph.lastClickedVertex;
         const neighboursBeforeExpansion = vertexToExpand?.neighbours.size;
-        
-        if (graph.getVertices().length >= GraphManager.MAXIMUM_VERTICES){
-            RenderingUtility.showError("Maximum number of entities reached")
+
+        if (graph.getVertices().length >= GraphManager.MAXIMUM_VERTICES) {
+            RenderingUtility.showError("Maximum number of entities reached");
         }
-        
+
         if (vertexToExpand) {
             const settings = this.uiController.getSettings();
             this.isExpandingVertex = true;
@@ -76,7 +81,9 @@ export class InputManager {
 
         // Check vertices for being clicked on
         for (const vertex of graph.getVertices()) {
-            if (VertexUtility.pointInBoundary(mousePos, this.graphManager.ctx, this.camera, vertex)) {
+            if (
+                VertexUtility.pointInBoundary(mousePos, this.graphManager.ctx, this.camera, vertex)
+            ) {
                 hitVertex = vertex;
             }
         }
@@ -135,9 +142,16 @@ export class InputManager {
 
             // Check vertices for being hovered over
             for (const vertex of graph.getVertices()) {
-                if (VertexUtility.pointInBoundary(mousePos, this.graphManager.ctx, this.camera, vertex)) {
+                if (
+                    VertexUtility.pointInBoundary(
+                        mousePos,
+                        this.graphManager.ctx,
+                        this.camera,
+                        vertex
+                    )
+                ) {
                     graph.hoveredVertex = vertex;
-                    return
+                    return;
                 }
             }
             graph.hoveredVertex = undefined;

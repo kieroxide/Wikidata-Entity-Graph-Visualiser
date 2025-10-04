@@ -9,36 +9,36 @@ export class CanvasUtility {
         HUE_MAX: 359,
         SATURATION_MIN: 70,
         SATURATION_MAX: 90,
-        LIGHTNESS_MIN: 25, 
-        LIGHTNESS_MAX: 40, 
+        LIGHTNESS_MIN: 25,
+        LIGHTNESS_MAX: 40,
     };
 
     private static readonly PALETTE = [
-        "#1d3557", 
-        "#d62828", 
-        "#2a6f97", 
-        "#e85d04", 
-        "#2a9d8f", 
-        "#264653", 
-        "#c44536", 
-        "#118ab2", 
-        "#f77f00", 
-        "#5a4a6a", 
-        "#22223b", 
-        "#3d2f1f", 
-        "#2d6a4f", 
-        "#d84315", 
-        "#1e5f74", 
-        "#6a040f", 
-        "#06402b", 
-        "#5e3023", 
-        "#1a535c", 
-        "#7209b7", 
-        "#023047", 
-        "#6d1a36", 
-        "#124559", 
-        "#873e23", 
-        "#0b3954", 
+        "#1d3557",
+        "#d62828",
+        "#2a6f97",
+        "#e85d04",
+        "#2a9d8f",
+        "#264653",
+        "#c44536",
+        "#118ab2",
+        "#f77f00",
+        "#5a4a6a",
+        "#22223b",
+        "#3d2f1f",
+        "#2d6a4f",
+        "#d84315",
+        "#1e5f74",
+        "#6a040f",
+        "#06402b",
+        "#5e3023",
+        "#1a535c",
+        "#7209b7",
+        "#023047",
+        "#6d1a36",
+        "#124559",
+        "#873e23",
+        "#0b3954",
     ];
 
     private static _paletteIndex = 0;
@@ -63,7 +63,12 @@ export class CanvasUtility {
     /**
      * Checks if a point is within the visible canvas area
      */
-    static isPointInView(camera: Camera, canvas: HTMLCanvasElement, point: Vec, margin = 0): boolean {
+    static isPointInView(
+        camera: Camera,
+        canvas: HTMLCanvasElement,
+        point: Vec,
+        margin = 0
+    ): boolean {
         point = camera.worldToCanvas(point);
         return (
             point.x >= 0 - margin &&
@@ -77,9 +82,18 @@ export class CanvasUtility {
      * Checks if an edge (line between two points) is within the visible canvas area
      * Returns true if either endpoint is in view, or if the edge crosses the canvas
      */
-    static isEdgeInView(camera: Camera, canvas: HTMLCanvasElement, start: Vec, end: Vec, margin = 0): boolean {
+    static isEdgeInView(
+        camera: Camera,
+        canvas: HTMLCanvasElement,
+        start: Vec,
+        end: Vec,
+        margin = 0
+    ): boolean {
         // If either endpoint is in view
-        if (this.isPointInView(camera, canvas, start, margin) || this.isPointInView(camera, canvas, end, margin)) {
+        if (
+            this.isPointInView(camera, canvas, start, margin) ||
+            this.isPointInView(camera, canvas, end, margin)
+        ) {
             return true;
         }
 
@@ -95,7 +109,13 @@ export class CanvasUtility {
     /**
      * Checks if two line segments (p1-p2 and q1-q2) intersect
      */
-    private static linesIntersect(camera: Camera, lineStart: Vec, lineEnd: Vec, canvasStart: Vec, canvasEnd: Vec): boolean {
+    private static linesIntersect(
+        camera: Camera,
+        lineStart: Vec,
+        lineEnd: Vec,
+        canvasStart: Vec,
+        canvasEnd: Vec
+    ): boolean {
         lineStart = camera.worldToCanvas(lineStart);
         lineEnd = camera.worldToCanvas(lineEnd);
 
@@ -129,7 +149,8 @@ export class CanvasUtility {
         return CanvasUtility.isPointInView(camera, canvas, vertex.pos, radius + margin);
     }
     static nextNiceColor() {
-        const color = CanvasUtility.PALETTE[CanvasUtility._paletteIndex % CanvasUtility.PALETTE.length];
+        const color =
+            CanvasUtility.PALETTE[CanvasUtility._paletteIndex % CanvasUtility.PALETTE.length];
         CanvasUtility._paletteIndex++;
         return color;
     }
@@ -163,11 +184,15 @@ export class CanvasUtility {
      */
     static randomNiceColor() {
         if (this.PALETTE.length <= this._paletteIndex) {
-            const hue = Math.floor(Math.random() * CanvasUtility.COLOURS.HUE_MAX) + CanvasUtility.COLOURS.HUE_MIN;
+            const hue =
+                Math.floor(Math.random() * CanvasUtility.COLOURS.HUE_MAX) +
+                CanvasUtility.COLOURS.HUE_MIN;
             const saturation =
-                Math.floor(Math.random() * CanvasUtility.COLOURS.SATURATION_MAX) + CanvasUtility.COLOURS.SATURATION_MIN;
+                Math.floor(Math.random() * CanvasUtility.COLOURS.SATURATION_MAX) +
+                CanvasUtility.COLOURS.SATURATION_MIN;
             const lightness =
-                Math.floor(Math.random() * CanvasUtility.COLOURS.LIGHTNESS_MAX) + CanvasUtility.COLOURS.LIGHTNESS_MIN;
+                Math.floor(Math.random() * CanvasUtility.COLOURS.LIGHTNESS_MAX) +
+                CanvasUtility.COLOURS.LIGHTNESS_MIN;
             return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
         } else {
             return this.nextNiceColor();

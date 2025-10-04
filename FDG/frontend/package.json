@@ -1,17 +1,20 @@
 {
-  "name": "fdg",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "start:backend": "cd ../backend && python WikiGraphServer.py",
-    "start:both": "concurrently \"npm run start:backend\" \"npm run dev\""
-  },
-  "devDependencies": {
-    "typescript": "~5.8.3",
-    "vite": "^7.1.2",
-    "concurrently": "^7.6.0"
-  }
+    "name": "fdg",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "prebuild": "npm run format",
+        "build": "vite build",
+        "start:backend": "cd ../backend && python WikiGraphServer.py",
+        "start:both": "concurrently \"npm run start:backend\" \"npm run dev\"",
+        "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\""
+    },
+    "devDependencies": {
+        "concurrently": "^7.6.0",
+        "prettier": "^3.6.2",
+        "typescript": "~5.8.3",
+        "vite": "^7.1.2"
+    }
 }

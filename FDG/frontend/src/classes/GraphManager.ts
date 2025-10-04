@@ -27,13 +27,13 @@ export class GraphManager {
     private static readonly MINIMUM_ENTITY_FETCH = 1;
     private static readonly INITIAL_SIMULATION_PRELOAD_STEPS = 200;
     static readonly MAXIMUM_VERTICES = 250;
-    
+
     private readonly _graph: Graph;
     private readonly _ctx: CanvasRenderingContext2D;
     private readonly _canvas: HTMLCanvasElement;
 
     private _stopExpansion = false;
-    
+
     constructor(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
         this._ctx = ctx;
         this._graph = new Graph(ctx, canvas);
@@ -67,10 +67,17 @@ export class GraphManager {
                 return this._graph; // nothing to load
             }
             this._stopExpansion = true;
-            const backendResp: BackendResponse = await NetworkUtility.fetchGraphData(entityId, depth, relationLimit);
+            const backendResp: BackendResponse = await NetworkUtility.fetchGraphData(
+                entityId,
+                depth,
+                relationLimit
+            );
 
             // Avoids data that has below minimum entities to avoid ugly graphs
-            if (Object.entries(backendResp.data.entities).length <= GraphManager.MINIMUM_ENTITY_FETCH) {
+            if (
+                Object.entries(backendResp.data.entities).length <=
+                GraphManager.MINIMUM_ENTITY_FETCH
+            ) {
                 RenderingUtility.showError("Unable to fetch further—no additional entities found.");
                 return undefined;
             }
@@ -90,7 +97,11 @@ export class GraphManager {
     /**
      * Parses API response and adds entities/relations to the graph
      */
-    private parseAndAddToGraph(data: BackendResponse["data"], append = false, midpoint: Vec | undefined = undefined) {
+    private parseAndAddToGraph(
+        data: BackendResponse["data"],
+        append = false,
+        midpoint: Vec | undefined = undefined
+    ) {
         // Track existing vertices to compute new ones when appending
         const preExistingIds = new Set(Object.keys(this._graph.vertices));
 
@@ -102,7 +113,14 @@ export class GraphManager {
         for (const [vertexId, entity] of Object.entries(data.entities)) {
             if (!this._graph.vertices[vertexId]) {
                 this._graph.addVertex(
-                    new Vertex(vertexId, entity.label, entity.type, entity.image, entity.wikipedia, this._ctx)
+                    new Vertex(
+                        vertexId,
+                        entity.label,
+                        entity.type,
+                        entity.image,
+                        entity.wikipedia,
+                        this._ctx
+                    )
                 );
             }
         }
@@ -173,9 +191,17 @@ export class GraphManager {
     /**
      * Expands graph by fetching related entities for a vertex and appending to graph
      */
-    private async appendVertexExpansion(vertexId: string, depth: number, relationLimit: number = 5): Promise<Graph> {
+    private async appendVertexExpansion(
+        vertexId: string,
+        depth: number,
+        relationLimit: number = 5
+    ): Promise<Graph> {
         try {
-            const backendResp: BackendResponse = await NetworkUtility.fetchGraphData(vertexId, depth, relationLimit);
+            const backendResp: BackendResponse = await NetworkUtility.fetchGraphData(
+                vertexId,
+                depth,
+                relationLimit
+            );
 
             const append = true;
             const vertex = this._graph.getVertex(vertexId);

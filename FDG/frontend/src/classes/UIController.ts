@@ -77,11 +77,15 @@ export class UIController {
 
         // Search functionality
         this._elements.wikiInput?.addEventListener("input", () => this.handleInputSuggestions());
-        this._elements.wikiInput?.addEventListener("keydown", (e) => this.handleSuggestionKeydown(e));
-        this._elements.suggestionsDiv?.addEventListener("mousedown", (e) => this.handleSuggestionClick(e));
+        this._elements.wikiInput?.addEventListener("keydown", e => this.handleSuggestionKeydown(e));
+        this._elements.suggestionsDiv?.addEventListener("mousedown", e =>
+            this.handleSuggestionClick(e)
+        );
 
         // Kill Expansions
-        this._elements.stopExpansionButton?.addEventListener("click", () => this.handleStopExpansionsClick());
+        this._elements.stopExpansionButton?.addEventListener("click", () =>
+            this.handleStopExpansionsClick()
+        );
 
         // Clear graph button
         this._elements.clearButton?.addEventListener("click", () => this.handleClearGraph());
@@ -90,7 +94,9 @@ export class UIController {
         this._elements.depthSlider?.addEventListener("input", () => this.updateDepthDisplay());
 
         // Entity limit slider
-        this._elements.relationLimit?.addEventListener("input", () => this.updateEntityLimitDisplay());
+        this._elements.relationLimit?.addEventListener("input", () =>
+            this.updateEntityLimitDisplay()
+        );
     }
 
     /** Allows aborting a current expansion */
@@ -185,7 +191,10 @@ export class UIController {
     private handleSuggestionKeydown(e: KeyboardEvent) {
         if (!this._suggestions.length) return;
         if (e.key === "ArrowDown") {
-            this._selectedSuggestion = Math.min(this._selectedSuggestion + 1, this._suggestions.length - 1);
+            this._selectedSuggestion = Math.min(
+                this._selectedSuggestion + 1,
+                this._suggestions.length - 1
+            );
             this.renderSuggestions();
             e.preventDefault();
         } else if (e.key === "ArrowUp") {

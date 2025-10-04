@@ -39,11 +39,11 @@ class Application {
             throw new Error("Canvas element with id 'graphCanvas' not found");
         }
 
-        // Added ctx optimisation options 
+        // Added ctx optimisation options
         this.ctx = this.canvas.getContext("2d", {
             alpha: false,
-            desynchronized: true, 
-            willReadFrequently: false, 
+            desynchronized: true,
+            willReadFrequently: false,
         })!;
         if (!this.ctx) {
             throw new Error("Unable to get 2D context from canvas");
@@ -71,33 +71,24 @@ class Application {
         this.camera = new Camera();
         this.graphManager = new GraphManager(this.ctx!, this.canvas);
 
+        // Uncomment to test
+        //this.graphManager.graph.testGraphCreator(250);
+
         // Initialize UI and input managers
         this.uiController = new UIController(this.graphManager, this.camera);
-        this.inputManager = new InputManager(this.canvas, this.camera, this.graphManager, this.uiController);
+        this.inputManager = new InputManager(
+            this.canvas,
+            this.camera,
+            this.graphManager,
+            this.uiController
+        );
     }
 
     /** Starts the main render and simulation loop. */
     private async startRenderLoop() {
-        let frameCount = 0;
-        let fps = 0;
-        let lastFpsTime = performance.now();
-
-        const gameLoop = (now: number) => {
-            // Ensure 30fps cap
+        const gameLoop = () => {
             this.graphManager.simulate();
             RenderingUtility.render(this.ctx, this.canvas, this.camera, this.graphManager);
-            //if (frameCount % 2 === 0) {
-            //    fps++;
-            //}
-            fps++
-            // FPS counter - log every second
-            if (now - lastFpsTime >= 1000) {
-                console.log(`FPS: ${fps}`);
-                fps = 0;
-                lastFpsTime = now;
-            }
-
-            frameCount++;
 
             // Continue loop
             requestAnimationFrame(gameLoop);

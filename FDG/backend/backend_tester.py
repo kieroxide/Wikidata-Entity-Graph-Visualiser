@@ -86,8 +86,20 @@ def test_multiple_qids(qids):
         check_filtering_consistency(entities, properties, relations, adj)
         print("BFS order:", bfs_res)
 
-
+def consistency_check(qid, limit, depth):
+    """Calls same request multiple times to check same response is given"""
+    with app.test_client() as client:
+        prev_response = client.get(f"/api/graph/{qid}?limit={limit}&depth={depth}").json
+        for _ in range(5):
+            response = client.get(f"/api/graph/{qid}?limit={limit}&depth={depth}").json
+            if response != prev_response:
+                response.get
+                print("inconsistent responses", response, prev_response)
+                
+                return
+    
 def main():
+    consistency_check("Q1", 10, 5)
     with app.test_client() as client:
         response = client.get("/api/graph/Q1")
     data = response.json["data"]

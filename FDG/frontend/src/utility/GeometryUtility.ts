@@ -17,7 +17,7 @@ export class GeometryUtility {
     static distance(vertexPosA: Vec, vertexPosB: Vec) {
         const dx = vertexPosA.x - vertexPosB.x;
         const dy = vertexPosA.y - vertexPosB.y;
-        return Math.sqrt(dx * dx + dy * dy)
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     /**
@@ -54,12 +54,17 @@ export class GeometryUtility {
     /**
      * Creates evenly spaced points around a circle
      */
-    static circlePoints(centerX: number, centerY: number, radius: number, numOfPoints = 100): Array<Vec> {
+    static circlePoints(
+        centerX: number,
+        centerY: number,
+        radius: number,
+        numOfPoints = 100
+    ): Array<Vec> {
         const points = [];
         // Offset to avoid straight line graphs
-        const offset = Math.PI / 18
+        const offset = Math.PI / 18;
         for (let i = 0; i < numOfPoints; i++) {
-            const theta = (offset + (2 * Math.PI * i)) / numOfPoints - Math.PI / 2;
+            const theta = (offset + 2 * Math.PI * i) / numOfPoints - Math.PI / 2;
             const x = centerX + radius * Math.cos(theta);
             const y = centerY + radius * Math.sin(theta);
             points.push(new Vec(x, y));

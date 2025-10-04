@@ -10,13 +10,19 @@ export class Repulsion {
     private static readonly DISTANCE_CUTOFF = Infinity; // Set to infinity as unused
 
     /** Applies repulsive forces between all pairs of vertices using the WASM-accelerated function. */
-    static repulsion(vertices: Array<Vertex>, strength: number = Repulsion.STRENGTH, exponent: number = 1) {
+    static repulsion(
+        vertices: Array<Vertex>,
+        strength: number = Repulsion.STRENGTH,
+        exponent: number = 1
+    ) {
         for (let i = 0; i < vertices.length; i++) {
             for (let j = i + 1; j < vertices.length; j++) {
                 const vertexA = vertices[i];
                 const vertexB = vertices[j];
 
-                const width_offset = vertexA._cachedDimensions!.boxWidth / 2 + vertexB._cachedDimensions!.boxWidth / 2;
+                const width_offset =
+                    vertexA._cachedDimensions!.boxWidth / 2 +
+                    vertexB._cachedDimensions!.boxWidth / 2;
 
                 // Call the WASM function
                 const result = repulsion(

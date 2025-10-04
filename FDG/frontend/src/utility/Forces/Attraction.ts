@@ -16,7 +16,7 @@ export class Attraction {
     static centerAttraction(origins: Set<Vertex>, canvas: HTMLCanvasElement) {
         const canvasCenter = new Vec(canvas.clientWidth / 2, canvas.clientHeight / 2);
 
-        origins.forEach((origin) => {
+        origins.forEach(origin => {
             if (origin.selected) return;
             const dx = canvasCenter.x - origin.pos.x;
             const dy = canvasCenter.y - origin.pos.y;
@@ -46,7 +46,8 @@ export class Attraction {
             const normX = dx / distance;
             const normY = dy / distance;
 
-            const width_offset = vertexA._cachedDimensions!.boxWidth / 2 + vertexB._cachedDimensions!.boxWidth / 2;
+            const width_offset =
+                vertexA._cachedDimensions!.boxWidth / 2 + vertexB._cachedDimensions!.boxWidth / 2;
 
             const connectionsA = vertexA.neighbours.size;
             const connectionsB = vertexB.neighbours.size;

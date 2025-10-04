@@ -70,7 +70,13 @@ export class RenderingUtility {
     /**
      * Calculate all arrow positions with offset applied
      */
-    static calculateArrowPositions(source: Vec, target: Vec, angle: number, offset: Vec, ArrowHeadSize: number) {
+    static calculateArrowPositions(
+        source: Vec,
+        target: Vec,
+        angle: number,
+        offset: Vec,
+        ArrowHeadSize: number
+    ) {
         // Move line endpoint back by headLength to leave room for arrowhead
         const lineEndX = target.x - ArrowHeadSize * Math.cos(angle);
         const lineEndY = target.y - ArrowHeadSize * Math.sin(angle);
@@ -102,8 +108,14 @@ export class RenderingUtility {
 
         ctx.beginPath();
         ctx.moveTo(x, y);
-        ctx.lineTo(x - headLength * Math.cos(angle + arrowAngle), y - headLength * Math.sin(angle + arrowAngle));
-        ctx.lineTo(x - headLength * Math.cos(angle - arrowAngle), y - headLength * Math.sin(angle - arrowAngle));
+        ctx.lineTo(
+            x - headLength * Math.cos(angle + arrowAngle),
+            y - headLength * Math.sin(angle + arrowAngle)
+        );
+        ctx.lineTo(
+            x - headLength * Math.cos(angle - arrowAngle),
+            y - headLength * Math.sin(angle - arrowAngle)
+        );
         ctx.closePath();
         ctx.fill();
     }

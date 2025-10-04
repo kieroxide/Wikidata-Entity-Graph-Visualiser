@@ -206,7 +206,7 @@ export class Vertex {
         const maxBorderWidth = Math.max(...Object.values(Vertex.BORDER_WIDTH));
         const antiAliasingBuffer = 4;
         const margin = maxBorderWidth * 2 + antiAliasingBuffer;
-        
+
         // Create a DPR-aware offscreen canvas so sprites remain sharp on high-DPI displays.
         const dpr = window.devicePixelRatio || 1;
         const cssWidth = cache.boxWidth + margin;
@@ -216,7 +216,7 @@ export class Vertex {
         // Internal pixel buffer scaled by DPR
         sprite.width = Math.round(cssWidth * dpr);
         sprite.height = Math.round(cssHeight * dpr);
-        
+
         // Expose CSS dimensions so we can position using layout (CSS) pixels later
         sprite.style.width = `${cssWidth}px`;
         sprite.style.height = `${cssHeight}px`;

@@ -1,12 +1,12 @@
-import { Vertex } from "./Vertex.ts";
+import { Vertex } from "./Vertex";
 import { Edge } from "./Edge";
 import { Vec } from "./Vec";
 import { Repulsion } from "../utility/Forces/Repulsion";
 import { Attraction } from "../utility/Forces/Attraction";
 import { GeometryUtility } from "../utility/GeometryUtility";
 import { CanvasUtility } from "../utility/CanvasUtility";
-import { MathUtility } from "../utility/MathUtility.ts";
-import type { Camera } from "../classes/Camera.ts";
+import { MathUtility } from "../utility/MathUtility";
+import type { Camera } from "../classes/Camera";
 
 export class Graph {
     private static readonly INITIAL_RADIUS = 400;
@@ -72,7 +72,7 @@ export class Graph {
             }
         }
     }
-    
+
     /** Gets vertex by ID */
     getVertex(id: string) {
         return this._vertices[id];
@@ -99,7 +99,11 @@ export class Graph {
     }
 
     /** Checks if edge already exists between two vertices with different property*/
-    private edgeExistsDifferentProperty(sourceId: string, targetId: string, property: string): boolean {
+    private edgeExistsDifferentProperty(
+        sourceId: string,
+        targetId: string,
+        property: string
+    ): boolean {
         for (const edge of this._edges) {
             const sameEdge = edge.sourceRef.id === sourceId && edge.targetRef.id === targetId;
             // Checks if the property is a new property
@@ -219,7 +223,12 @@ export class Graph {
         let new_vertices_vals = Object.values(new_vertices);
 
         // Circles the new Vertices around the midpoint
-        let positions = GeometryUtility.circlePoints(midpoint!.x, midpoint!.y, radius, new_vertices_vals.length);
+        let positions = GeometryUtility.circlePoints(
+            midpoint!.x,
+            midpoint!.y,
+            radius,
+            new_vertices_vals.length
+        );
         for (let i = 0; i < new_vertices_vals.length; i++) {
             new_vertices_vals[i].pos.x = positions[i].x;
             new_vertices_vals[i].pos.y = positions[i].y;
@@ -260,7 +269,12 @@ export class Graph {
             for (const [level, nodes] of layers.entries()) {
                 const radius = (level + 1) * Graph.INITIAL_RADIUS; // add 1 to avoid * by 0
 
-                const positions = GeometryUtility.circlePoints(centerX, centerY, radius, nodes.length);
+                const positions = GeometryUtility.circlePoints(
+                    centerX,
+                    centerY,
+                    radius,
+                    nodes.length
+                );
 
                 for (let i = 0; i < nodes.length; i++) {
                     nodes[i].pos.x = positions[i].x;
@@ -310,8 +324,13 @@ export class Graph {
     draw(camera: Camera) {
         const drawSimple = camera.drawSimple;
 
-        const edgesToDraw = this._edges.filter((edge) => {
-            return CanvasUtility.isEdgeInView(camera, this._canvas, edge.sourceRef.pos, edge.targetRef.pos);
+        const edgesToDraw = this._edges.filter(edge => {
+            return CanvasUtility.isEdgeInView(
+                camera,
+                this._canvas,
+                edge.sourceRef.pos,
+                edge.targetRef.pos
+            );
         });
 
         Edge.drawBatched(this._ctx, edgesToDraw, camera.drawSimple, this._hoveredVertex);
@@ -331,5 +350,35 @@ export class Graph {
         this._componentOrigins = new Set();
         this._selectedVertex = undefined;
         this._lastClickedVertex = undefined;
+    }
+
+    testGraphCreator(numberOfVertices: number) {
+        // Create vertices
+        for (let i = 0; i < numberOfVertices; i++) {
+            this.addVertex(
+                new Vertex(`TEST_${i}`, `TestNode${i}`, "Test", undefined, undefined, this._ctx)
+            );
+        }
+
+        // Initialize positions and colors
+        this.initVerticesPos();
+        this.initVertexColour();
+
+        // Create tree structure (each node connects to 2-3 children)
+        const branchingFactor = 2; // Binary tree
+
+        for (let i = 0; i < numberOfVertices; i++) {
+            // Connect to children
+            for (let j = 1; j <= branchingFactor; j++) {
+                const childIndex = i * branchingFactor + j;
+
+                if (childIndex < numberOfVertices) {
+                    this.addEdge(`TEST_${i}`, `TEST_${childIndex}`, "test");
+                }
+            }
+        }
+
+        // Initialize edge colors
+        this.initEdgeColour();
     }
 }

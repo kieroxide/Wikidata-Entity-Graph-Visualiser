@@ -10,16 +10,24 @@ export class MathUtility {
 
     /** Returns the symmetric difference between two sets. */
     static symmetricDifference<T>(setA: Set<T>, setB: Set<T>) {
-        return new Set([...[...setA].filter((x) => !setB.has(x)), ...[...setB].filter((x) => !setA.has(x))]);
+        return new Set([
+            ...[...setA].filter(x => !setB.has(x)),
+            ...[...setB].filter(x => !setA.has(x)),
+        ]);
     }
 
     /** Returns the difference between two sets. */
     static difference<T>(setA: Set<T>, setB: Set<T>): Set<T> {
-        return new Set([...setA].filter((x) => !setB.has(x)));
+        return new Set([...setA].filter(x => !setB.has(x)));
     }
 
     /** Performs a depth-limited search from a vertex, returning all visited vertices. */
-    static depthSearch(vertex: Vertex, limit: number, depth: number = 0, visited: Set<Vertex> = new Set()) {
+    static depthSearch(
+        vertex: Vertex,
+        limit: number,
+        depth: number = 0,
+        visited: Set<Vertex> = new Set()
+    ) {
         if (limit <= depth) return visited;
         visited.add(vertex);
 

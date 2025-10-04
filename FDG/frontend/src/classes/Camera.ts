@@ -132,7 +132,11 @@ export class Camera {
         const padding = 0.6;
         const scaleX = (canvas.clientWidth * padding) / graphWidth;
         const scaleY = (canvas.clientHeight * padding) / graphHeight;
-        const fitZoom = MathUtility.clamp(Math.min(scaleX, scaleY), Camera.MIN_ZOOM, Camera.MAX_ZOOM); // More zoomed value
+        const fitZoom = MathUtility.clamp(
+            Math.min(scaleX, scaleY),
+            Camera.MIN_ZOOM,
+            Camera.MAX_ZOOM
+        ); // More zoomed value
 
         // Center the bounding box
         const cssWidth = canvas.clientWidth;
