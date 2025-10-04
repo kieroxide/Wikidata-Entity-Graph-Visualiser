@@ -1,4 +1,3 @@
-import type { Graph } from "./Graph.ts";
 import { Vertex } from "./Vertex.ts";
 import { Vec } from "./Vec.ts";
 import { RenderingUtility } from "../utility/RenderingUtility.ts";
@@ -32,15 +31,15 @@ export class Edge {
     static readonly LINE_SIZE = 4;
     edgeColour: string;
 
-    constructor(sourceID: string, targetID: string, type: string, graph: Graph, isBiDirectional: boolean = false) {
+    constructor(sourceRef: Vertex, targetRef: Vertex, type: string, isBiDirectional: boolean = false) {
         this._isBidirectional = isBiDirectional;
         this._types = [type];
         this.edgeColour = "#000000"; // Default colour
-        this._sourceRef = graph.getVertex(sourceID)!;
-        this._targetRef = graph.getVertex(targetID)!;
+        this._sourceRef = sourceRef;
+        this._targetRef = targetRef;
 
         if (!this._sourceRef || !this._targetRef) {
-            throw new Error(`Invalid vertex IDs: source=${sourceID}, target=${targetID}`);
+            throw new Error(`Invalid vertex IDs: source=${sourceRef}, target=${targetRef}`);
         }
     }
 

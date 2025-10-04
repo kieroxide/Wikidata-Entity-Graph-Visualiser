@@ -155,8 +155,9 @@ export class Graph {
             oppositeDirectionalEdge.isBidirectional = true;
             isBiDirectional = true;
         }
-
-        const edge = new Edge(sourceId, targetId, property, this, isBiDirectional);
+        const sourceRef = this.getVertex(sourceId);
+        const targetRef = this.getVertex(targetId);
+        const edge = new Edge(sourceRef, targetRef, property, isBiDirectional);
 
         sourceVertex.addConnectedEdge(edge);
         targetVertex.addConnectedEdge(edge);
