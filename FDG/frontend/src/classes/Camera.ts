@@ -1,8 +1,11 @@
 import { Vec } from "../graph/Vec";
 import { Vertex } from "../graph/Vertex";
+import { MathUtility } from "../utility/MathUtility";
 
 export class Camera {
     private static readonly MOUSE_SPEED_FACTOR = 1;
+    private static readonly MAX_ZOOM = 0.5;
+    private static readonly MIN_ZOOM = 0.05;
     private static readonly ZOOM_SCALE_FACTOR = 1.1;
     private static readonly SIMPLE_ZOOM_CUTOFF = 0.25;
 
@@ -14,7 +17,7 @@ export class Camera {
 
     constructor() {
         this._pos = new Vec(0, 0);
-        this._zoom = Camera.SIMPLE_ZOOM_CUTOFF;
+        this._zoom = Camera.MAX_ZOOM;
         this._cameraLockedVertex = null;
     }
 
@@ -77,7 +80,11 @@ export class Camera {
      */
     zoomAt(canvas_mouse: Vec, world_mouse: Vec, deltaY: number) {
         const factor = deltaY < 0 ? Camera.ZOOM_SCALE_FACTOR : 1 / Camera.ZOOM_SCALE_FACTOR;
-        this._zoom *= factor;
+
+        let newZoom = this._zoom * factor;
+        newZoom = MathUtility.clamp(newZoom, Camera.MIN_ZOOM, Camera.MAX_ZOOM);
+        this._zoom = newZoom;
+
         this._pos.x = canvas_mouse.x - world_mouse.x * this._zoom;
         this._pos.y = canvas_mouse.y - world_mouse.y * this._zoom;
 
@@ -125,7 +132,7 @@ export class Camera {
         const padding = 0.6;
         const scaleX = (canvas.clientWidth * padding) / graphWidth;
         const scaleY = (canvas.clientHeight * padding) / graphHeight;
-        const fitZoom = Math.min(scaleX, scaleY); // More zoomed value
+        const fitZoom = MathUtility.clamp(Math.min(scaleX, scaleY), Camera.MIN_ZOOM, Camera.MAX_ZOOM); // More zoomed value
 
         // Center the bounding box
         const cssWidth = canvas.clientWidth;
