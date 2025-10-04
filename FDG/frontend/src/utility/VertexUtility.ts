@@ -6,7 +6,7 @@ import { TextUtility } from "./TextUtility";
 import { MathUtility } from "./MathUtility";
 
 export class VertexUtility {
-    private static readonly BOX_PADDING = 15;
+    private static readonly BOX_PADDING = 20;
 
     private static readonly IMAGE_TEXT_GAP = 20;
     private static readonly IMAGE_SIZE_MULTIPLIER = 2.25;
