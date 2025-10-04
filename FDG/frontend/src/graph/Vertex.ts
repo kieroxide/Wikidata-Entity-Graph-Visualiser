@@ -206,13 +206,26 @@ export class Vertex {
         const maxBorderWidth = Math.max(...Object.values(Vertex.BORDER_WIDTH));
         const antiAliasingBuffer = 4;
         const margin = maxBorderWidth * 2 + antiAliasingBuffer;
+        
+        // Create a DPR-aware offscreen canvas so sprites remain sharp on high-DPI displays.
+        const dpr = window.devicePixelRatio || 1;
+        const cssWidth = cache.boxWidth + margin;
+        const cssHeight = cache.boxHeight + margin;
 
         const sprite = document.createElement("canvas");
-        sprite.width = cache.boxWidth + margin;
-        sprite.height = cache.boxHeight + margin;
+        // Internal pixel buffer scaled by DPR
+        sprite.width = Math.round(cssWidth * dpr);
+        sprite.height = Math.round(cssHeight * dpr);
+        
+        // Expose CSS dimensions so we can position using layout (CSS) pixels later
+        sprite.style.width = `${cssWidth}px`;
+        sprite.style.height = `${cssHeight}px`;
 
         const spriteCtx = sprite.getContext("2d")!;
-        spriteCtx.translate(sprite.width / 2, sprite.height / 2);
+        // Scale drawing operations so 1 unit == 1 CSS pixel
+        spriteCtx.scale(dpr, dpr);
+        // Translate to centre in CSS-pixel coordinates
+        spriteCtx.translate(cssWidth / 2, cssHeight / 2);
 
         // Draw background box
         spriteCtx.fillStyle = Vertex.VERTEX_COLOUR;
@@ -299,7 +312,9 @@ export class Vertex {
         }
 
         const sprite = this.getOrCreateSprite(ctx);
-        ctx.drawImage(sprite, this.pos.x - sprite.width / 2, this.pos.y - sprite.height / 2);
+        const cssW = parseFloat(sprite.style.width);
+        const cssH = parseFloat(sprite.style.height);
+        ctx.drawImage(sprite, this.pos.x - cssW / 2, this.pos.y - cssH / 2, cssW, cssH);
 
         // Draw border dynamically depending on state
         const boxLeft = this.pos.x - cache.boxWidth / 2;
