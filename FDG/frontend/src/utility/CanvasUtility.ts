@@ -84,8 +84,8 @@ export class CanvasUtility {
         }
 
         const canvasEdges = CanvasUtility.getCanvasBounds(canvas);
-        for (const [edgeStart, edgeEnd] of canvasEdges) {
-            if (CanvasUtility.linesIntersect(camera, start, end, edgeStart, edgeEnd)) {
+        for (const [canvasA, canvasB] of canvasEdges) {
+            if (CanvasUtility.linesIntersect(camera, start, end, canvasA, canvasB)) {
                 return true;
             }
         }
@@ -95,17 +95,17 @@ export class CanvasUtility {
     /**
      * Checks if two line segments (p1-p2 and q1-q2) intersect
      */
-    private static linesIntersect(camera: Camera, aStart: Vec, aEnd: Vec, edgeStart: Vec, EdgeEnd: Vec): boolean {
+    private static linesIntersect(camera: Camera, edgeStart: Vec, edgeEnd: Vec, canvasStart: Vec, canvasEnd: Vec): boolean {
         edgeStart = camera.worldToCanvas(edgeStart);
-        EdgeEnd = camera.worldToCanvas(EdgeEnd);
+        edgeEnd = camera.worldToCanvas(edgeEnd);
 
         // Helper to check if three points are in counter-clockwise order
         function ccw(p1: Vec, p2: Vec, p3: Vec) {
             return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
         }
         return (
-            ccw(aStart, edgeStart, EdgeEnd) !== ccw(aEnd, edgeStart, EdgeEnd) &&
-            ccw(aStart, aEnd, edgeStart) !== ccw(aStart, aEnd, EdgeEnd)
+            ccw(edgeStart, canvasStart, canvasEnd) !== ccw(edgeEnd, canvasStart, canvasEnd) &&
+            ccw(edgeStart, edgeEnd, canvasStart) !== ccw(edgeStart, edgeEnd, canvasEnd)
         );
     }
 
