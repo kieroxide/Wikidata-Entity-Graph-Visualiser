@@ -44,17 +44,20 @@ export class InputManager {
             );
             return;
         }
-
+        
         const graph = this.graphManager.graph;
         const vertexToExpand = graph.lastClickedVertex;
         const neighboursBeforeExpansion = vertexToExpand?.neighbours.size;
-
+        
+        if (graph.getVertices().length >= GraphManager.MAXIMUM_VERTICES){
+            RenderingUtility.showError("Maximum number of entities reached")
+        }
+        
         if (vertexToExpand) {
             const settings = this.uiController.getSettings();
             this.isExpandingVertex = true;
             await this.graphManager.expandVertex(
                 vertexToExpand,
-                this.graphManager,
                 settings.depth,
                 settings.relationLimit
             );
