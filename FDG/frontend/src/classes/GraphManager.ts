@@ -26,13 +26,14 @@ interface BackendResponse {
 export class GraphManager {
     private static readonly MINIMUM_ENTITY_FETCH = 1;
     private static readonly INITIAL_SIMULATION_PRELOAD_STEPS = 200;
-
+    static readonly MAXIMUM_VERTICES = 250;
+    
     private readonly _graph: Graph;
     private readonly _ctx: CanvasRenderingContext2D;
     private readonly _canvas: HTMLCanvasElement;
 
     private _stopExpansion = false;
-
+    
     constructor(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
         this._ctx = ctx;
         this._graph = new Graph(ctx, canvas);
@@ -145,13 +146,15 @@ export class GraphManager {
     /**
      * Expands all vertices in depth frontier up to relationGoal
      */
-    async expandVertex(vertexToExpand: Vertex, graphManager: GraphManager, depth: number, relationGoal: number) {
+    async expandVertex(vertexToExpand: Vertex, depth: number, relationGoal: number) {
         // Reset stop expansion to false if previous expansion was stopped
         this._stopExpansion = false;
 
         let expandedVertices = new Set<Vertex>();
         // Iterates through to maxDepth, expanding each layer of the depth search
         for (let currentDepth = 1; currentDepth < depth + 1; currentDepth++) {
+            if (this._graph.getVertices().length >= GraphManager.MAXIMUM_VERTICES) return;
+
             const depthSet = MathUtility.depthSearch(vertexToExpand, currentDepth);
             const currentFrontier = MathUtility.difference(depthSet, expandedVertices); // Vertices to expand
 
@@ -159,7 +162,7 @@ export class GraphManager {
             for (const vertex of currentFrontier) {
                 if (!this._stopExpansion) {
                     vertex.expanding = true;
-                    await graphManager.expandTillLimit(vertex, relationGoal);
+                    await this.expandTillLimit(vertex, relationGoal);
                     vertex.expanding = false;
                     expandedVertices.add(vertex);
                 }
